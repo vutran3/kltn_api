@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const iotRoutes = require("./v1/iot.routes");
+const iotRoutes = require("./iot.routes");
 
 router.use("/api", iotRoutes);
 
