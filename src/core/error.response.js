@@ -10,52 +10,52 @@ class ErrorResponse extends Error {
 class ConflictRequestError extends ErrorResponse {
     constructor(
         message = ReasonPharases.CONFLICT,
-        statusCode = StatusCodes.CONFLICT
+        status = StatusCodes.CONFLICT
     ){
-        super(message, statusCode)
+        super(message, status)
     }
 }
 
 class BadRequestError extends ErrorResponse {
     constructor(
-        message = ReasonPhrases.BAD_REQUEST,
-        statusCode = StatusCodes.BAD_REQUEST
+        message = ReasonPharases.BAD_REQUEST,
+        status = StatusCodes.BAD_REQUEST
     ) {
-        super(message, statusCode);
+        super(message, status);
     }
 }
 class AuthFailureError extends ErrorResponse {
     constructor(
-        message = ReasonPhrases.UNAUTHORIZED,
-        statusCode = StatusCodes.UNAUTHORIZED
+        message = ReasonPharases.UNAUTHORIZED,
+        status = StatusCodes.UNAUTHORIZED
     ) {
-        super(message, statusCode);
+        super(message, status);
     }
 }
 
 class NotFoundError extends ErrorResponse {
     constructor(
-        message = ReasonPhrases.NOT_FOUND,
-        statusCode = StatusCodes.NOT_FOUND
+        message = ReasonPharases.NOT_FOUND,
+        status = StatusCodes.NOT_FOUND
     ) {
-        super(message, statusCode);
+        super(message, status);
     }
 }
 class ForbiddenError extends ErrorResponse {
     constructor(
-        message = ReasonPhrases.FORBIDDEN,
-        statusCode = StatusCodes.FORBIDDEN
+        message = ReasonPharases.FORBIDDEN,
+        status = StatusCodes.FORBIDDEN
     ) {
-        super(message, statusCode);
+        super(message, status);
     }
 }
 
 class InternalServerError extends ErrorResponse {
     constructor(
-        message = ReasonPhrases.INTERNAL_SERVER_ERROR,
-        statusCode = StatusCodes.INTERNAL_SERVER_ERROR
+        message = ReasonPharases.INTERNAL_SERVER_ERROR,
+        status = StatusCodes.INTERNAL_SERVER_ERROR
     ) {
-        super(message, statusCode);
+        super(message, status);
     }
 }
 module.exports = {

@@ -14,7 +14,7 @@ module.exports = {
 
             const deviceId = String(b.deviceId);
             const reading = buildReadingFromBody(b, ts);
-
+            
             // Ghi vào bucket
             const saved = await iotService.addReadingToBucket(deviceId, reading);
 
