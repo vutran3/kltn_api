@@ -11,14 +11,14 @@ const ReasonStatusCode = {
 
 class SuccessResponse{
 
-    constructor({message, statusCode = StatusCode.OK, reasonStatusCode = ReasonStatusCode.OK, metadata = {}}){
+    constructor({message, status = StatusCode.OK, reasonStatusCode = ReasonStatusCode.OK, metadata = {}}){
         this.message = !message ? reasonStatusCode : message
-        this.statusCode = statusCode
+        this.status = status
         this.metadata = metadata
     }
 
     send(res, headers={}){
-        return res.status(this.statusCode).json(this)
+        return res.status(this.status).json(this)
     }
 }
 
@@ -29,8 +29,8 @@ class OK extends SuccessResponse{
     }
 }
 class CREATED extends SuccessResponse{
-    constructor({options = {},message, statusCode = StatusCode.CREATED, reasonStatusCode = ReasonStatusCode.CREATED, metadata}){
-        super({message, statusCode, reasonStatusCode, metadata})
+    constructor({options = {},message, status = StatusCode.CREATED, reasonStatusCode = ReasonStatusCode.CREATED, metadata}){
+        super({message, status, reasonStatusCode, metadata})
         this.options = options
     }
 }
