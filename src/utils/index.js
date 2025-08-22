@@ -41,8 +41,16 @@ const parseDateMaybe = (x) => {
     return undefined;
 };
 
+const parseDate = (v) => {
+    if(v == null) return null
+    const n = Number(v)
+    const d = Number.isFinite(n) ? new Date(n) : new Date(v)
+    return Number.isNaN(d.getTime()) ? null : d
+}
+
 module.exports = {
     toNumberOrUndefined,
     buildReadingFromBody,
-    parseDateMaybe
+    parseDateMaybe,
+    parseDate
 };

@@ -5,7 +5,7 @@ const { BadRequestError } = require('../core/error.response')
 const { SuccessResponse } = require('../core/success.response')
 const { uploadBufferToCloudinary } = require('../config/cloudinary.config')
 const HealthCheckService = require('../services/healthcheck.service')
-const { findAllCheckResults } = require('../models/repositories/healthcheck.repo')
+
 class HealthCheckController {
 
     static mondayKeyVN(tsMs, hourLocal = 8) {
@@ -76,8 +76,8 @@ class HealthCheckController {
 
     findAllResult = async (req, res, next) => {
         new SuccessResponse({
-            message: "Find all check reuslt",
-            metadata: await findAllCheckResults(req.params)
+            message: "Find all check result",
+            metadata: await HealthCheckService.findAllResults(req.query)
         }).send(res)
     }
 }
