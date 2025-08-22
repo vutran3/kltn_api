@@ -15,4 +15,7 @@ const healthCheckSchema = new mongoose.Schema({
   ai_prediction: {type: Schema.Types.Mixed, required: true }
 }, { collection: COLLECTION_NAME });
 
+healthCheckSchema.index({ inspection_date: 1 });
+healthCheckSchema.index({ device_id: 1, inspection_date: -1 });
+
 module.exports = mongoose.model(DOCUMENT_NAME, healthCheckSchema);
