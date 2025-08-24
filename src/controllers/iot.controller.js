@@ -5,9 +5,9 @@ module.exports = {
     collectReadingData: async (req, res, next) => {
         try {
             const b = req.body || {};
-            if (!b.deviceId) {
-                return res.status(400).json({ error: "deviceId is required" });
-            }
+            // if (!b.deviceId) {
+            //     return res.status(400).json({ error: "deviceId is required" });
+            // }
             const nowMs = Date.now();
             const tsMs = typeof b.ts === "number" ? b.ts : nowMs;
             const ts = new Date(tsMs);
