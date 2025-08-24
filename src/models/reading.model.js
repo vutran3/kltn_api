@@ -12,7 +12,6 @@ const METRICS = [
     "airTemperature",
     "airHumidity",
     "lightRaw",
-    "rainRaw",
     "soilTemperature",
     "soilHumidity",
     "nitrogen",
@@ -28,7 +27,6 @@ const ReadingSchema = new Schema(
         airTemperature: { type: Number },
         airHumidity: { type: Number },
         lightRaw: { type: Number },
-        rainRaw: { type: Number, enum: [0, 1] },
         soilTemperature: { type: Number },
         soilHumidity: { type: Number },
         nitrogen: { type: Number },
@@ -57,8 +55,8 @@ const ReadingBucketSchema = new Schema(
         count: { type: Number, default: 0 },
         min: { type: StatsSchema, default: {} },
         max: { type: StatsSchema, default: {} },
-        sum: { type: StatsSchema, default: {} }, // remove
-        counts: { type: StatsSchema, default: {} }, // remove
+        sum: { type: StatsSchema, default: {} },
+        counts: { type: StatsSchema, default: {} },
         // Lần đo gần nhất trong bucket
         last: { type: ReadingSchema, default: null },
         // Mảng mẫu (nếu cần truy vấn chi tiết)
@@ -175,7 +173,6 @@ ReadingBucketSchema.statics.queryRange = async function queryRange(deviceId, fro
                 airTemperature: "$readings.airTemperature",
                 airHumidity: "$readings.airHumidity",
                 lightRaw: "$readings.lightRaw",
-                rainRaw: "$readings.rainRaw",
                 soilTemperature: "$readings.soilTemperature",
                 soilHumidity: "$readings.soilHumidity",
                 nitrogen: "$readings.nitrogen",
