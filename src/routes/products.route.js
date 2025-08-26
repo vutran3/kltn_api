@@ -1,0 +1,11 @@
+const router = require("express").Router();
+const ctrl = require("../controllers/product.controller");
+const asyncHandler = require("../helpers/asyncHandler");
+
+router.post("/", asyncHandler(ctrl.createProduct));
+router.get("/", asyncHandler(ctrl.listProducts));
+router.get("/:id", asyncHandler(ctrl.getProductById));
+router.patch("/:id", asyncHandler(ctrl.updateProduct));
+router.delete("/:id", asyncHandler(ctrl.deleteProduct));
+
+module.exports = router;

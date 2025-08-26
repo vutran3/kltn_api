@@ -9,11 +9,11 @@ const { Schema } = mongoose;
 const BUCKET_MS = Number(process.env.BUCKET_MS || 60 * 60 * 1000);
 const RETENTION_DAYS = Number(process.env.RETENTION_DAYS || 180);
 const METRICS = [
-    "airTemperature",
-    "airHumidity",
-    "lightRaw",
-    "soilTemperature",
-    "soilHumidity",
+    "air_temperature",
+    "air_humidity",
+    "light_raw",
+    "soil_temperature",
+    "soil_humidity",
     "nitrogen",
     "phosphorus",
     "potassium",
@@ -24,11 +24,12 @@ const ReadingSchema = new Schema(
     {
         // timestamp
         t: { type: Date, required: true },
-        airTemperature: { type: Number },
-        airHumidity: { type: Number },
-        lightRaw: { type: Number },
-        soilTemperature: { type: Number },
-        soilHumidity: { type: Number },
+        air_temperature: { type: Number },
+        air_humidity: { type: Number },
+        light_raw: { type: Number },
+        rainRaw: { type: Number, enum: [0, 1] },
+        soil_temperature: { type: Number },
+        soil_humidity: { type: Number },
         nitrogen: { type: Number },
         phosphorus: { type: Number },
         potassium: { type: Number },
@@ -40,7 +41,7 @@ const ReadingSchema = new Schema(
 // Subdoc: thống kê tổng hợp theo metric
 const StatsSchema = new Schema(
     {
-        // Ví dụ: min.airTemperature, max.airTemperature, sum.airTemperature, counts.airTemperature
+        // Ví dụ: min.air_temperature, max.air_temperature, sum.air_temperature, counts.air_temperature
     },
     { strict: false, _id: false }
 );
@@ -170,11 +171,12 @@ ReadingBucketSchema.statics.queryRange = async function queryRange(deviceId, fro
             $project: {
                 _id: 0,
                 t: "$readings.t",
-                airTemperature: "$readings.airTemperature",
-                airHumidity: "$readings.airHumidity",
-                lightRaw: "$readings.lightRaw",
-                soilTemperature: "$readings.soilTemperature",
-                soilHumidity: "$readings.soilHumidity",
+                air_temperature: "$readings.air_temperature",
+                air_humidity: "$readings.air_humidity",
+                light_raw: "$readings.light_raw",
+                rainRaw: "$readings.rainRaw",
+                soil_temperature: "$readings.soil_temperature",
+                soil_humidity: "$readings.soil_humidity",
                 nitrogen: "$readings.nitrogen",
                 phosphorus: "$readings.phosphorus",
                 potassium: "$readings.potassium",
