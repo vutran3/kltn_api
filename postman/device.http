@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:8000
+@contentType = application/json
+
+### CREATE DEVICE
+# @name createDevice
+POST {{baseUrl}}/api/devices
+Content-Type: {{contentType}}
+
+{
+  "device_id": "esp32-{{$timestamp}}",
+  "device_name": "Greenhouse ESP32",
+  "apiKey": "abc123"
+}
+
+### LIST DEVICES (phân trang + tìm kiếm + sort + chọn trường)
+GET {{baseUrl}}/api/devices?page=1&limit=10&search=esp32&is_active=true&sort=-createdAt&select=device_id,device_name,is_active,createdAt
+Accept: {{contentType}}
+
+### GET BY _id 
+GET {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}
+Accept: {{contentType}}
+
+### GET BY device_id
+GET {{baseUrl}}/api/devices/by-device-id/{{createDevice.response.body.$.device_id}}
+Accept: {{contentType}}
+
+### UPDATE
+PATCH {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}
+Content-Type: {{contentType}}
+
+{
+  "device_name": "Main Greenhouse Node"
+}
+
+### TOGGLE ACTIVE
+PATCH {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}/active
+Content-Type: {{contentType}}
+
+{
+  "is_active": true
+}
+
+
+### DELETE – xóa thiết bị vừa tạo
+DELETE {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}
+Accept: {{contentType}}
