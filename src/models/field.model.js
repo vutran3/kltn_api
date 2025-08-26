@@ -1,31 +1,21 @@
-const mongoose = require('mongoose')
-const { Schema } = mongoose
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
+const DOCUMENT_NAME = "Field";
+const COLLECTION_NAME = "fields";
 
-const DOCUMENT_NAME = 'Field'
-const COLLECTION_NAME = 'fields'
+const fieldSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        devices: { type: [Schema.Types.ObjectId], ref: "Device" },
+        owner: { type: Schema.Types.ObjectId, ref: "User" },
+        established_date: { type: Date },
+        description: { type: String },
+        total_area: { type: Number },
+        field_type: { type: String },
+        is_active: { type: Boolean, default: true }
+    },
+    { collection: COLLECTION_NAME }
+);
 
-const locationSchema = new mongoose.Schema({
-    address: { type: String },
-    latitude: { type: Number },
-    longitude: { type: Number },
-    city: { type: String },
-    country: { type: String }
-}, {
-    _id: false
-})
-
-const fieldSchema = new mongoose.Schema({
-    field_id: { type: Schema.Types.ObjectId },
-    name: { type: String, required: true },
-    owner_id: { type: Schema.Types.ObjectId, required: true },
-    establishedDate: { type: Date },
-    description: { type: String },
-    totalArea: { type: Number },
-    fieldType: { type: String },
-    isActive: { type: Boolean, default: true },
-    location: locationSchema
-}, {collection: COLLECTION_NAME})
-
-
-module.exports = mongoose.model(DOCUMENT_NAME, fieldSchema)
+module.exports = mongoose.model(DOCUMENT_NAME, fieldSchema);
