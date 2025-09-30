@@ -18,7 +18,11 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(
+    cors({
+        origin: "*"
+    })
+);
 app.use("/api", routes);
 
 app.use("/api/upload", express.raw({ type: "image/jpeg", limit: "20mb" }));
