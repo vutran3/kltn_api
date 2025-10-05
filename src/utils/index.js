@@ -1,3 +1,5 @@
+const { Types } = require("mongoose")
+
 const toNumberOrUndefined = (v) => {
     if (v === null || v === undefined || v === "") return undefined;
     const n = Number(v);
@@ -48,9 +50,14 @@ const parseDate = (v) => {
     return Number.isNaN(d.getTime()) ? null : d
 }
 
+const convertToObjectId = (id) => {
+    return new Types.ObjectId(id);
+}
+
 module.exports = {
     toNumberOrUndefined,
     buildReadingFromBody,
     parseDateMaybe,
-    parseDate
+    parseDate,
+    convertToObjectId
 };

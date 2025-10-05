@@ -5,6 +5,7 @@ const asyncHandler = require("../helpers/asyncHandler");
 router.post("/", asyncHandler(ctrl.createProduct));
 router.get("/", asyncHandler(ctrl.listProducts));
 router.get("/:id", asyncHandler(ctrl.getProductById));
+router.get('/get-name/:deviceId', asyncHandler(ctrl.getProductByDeviceId))
 router.patch("/:id", asyncHandler(ctrl.updateProduct));
 router.delete("/:id", asyncHandler(ctrl.deleteProduct));
 

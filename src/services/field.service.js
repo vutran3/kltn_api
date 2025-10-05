@@ -44,7 +44,13 @@ module.exports = {
             throw error;
         }
     },
-
+    getFieldByDeviceId: async (deviceId) => {
+        const result = Field.findOne({
+            devices: deviceId,
+            is_active: true
+        }).lean();
+        return result;
+    },
     updateField: async ({ id, payload }) => {
         try {
             const updated = await Field.findByIdAndUpdate(id, payload, { new: true, runValidators: true });

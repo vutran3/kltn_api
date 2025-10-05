@@ -10,6 +10,13 @@ const { PORT } = require("./src/config");
 const connectMongoDB = require("./src/databases/mongodb.database");
 const app = express();
 
+// ===== Tạo http server & socket.io =====
+
+const http = require('http');
+const server = http.createServer(app);
+const {initSocket} = require('./src/socket');
+const io = initSocket(server);
+
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -51,7 +58,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectMongoDB();
     console.log("Server is listening on port", PORT);
 });

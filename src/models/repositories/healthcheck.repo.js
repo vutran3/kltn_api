@@ -59,6 +59,9 @@ const findAllCheckResults = async ({ limit, page, sort, from, to, deviceId }) =>
     };
 };
 
+const findRecordById = async ({id}) => {
+    return healthCheck.findById(id).lean();
+} 
 const deleteDataByDeviceId = async ({ deviceId }) => {
     const { deletedCount } = await healthCheck.deleteMany({ device_id: deviceId });
     return deletedCount;
@@ -67,5 +70,6 @@ const deleteDataByDeviceId = async ({ deviceId }) => {
 module.exports = {
     insertPredictHealth,
     findAllCheckResults,
-    deleteDataByDeviceId
+    deleteDataByDeviceId,
+    findRecordById
 };
