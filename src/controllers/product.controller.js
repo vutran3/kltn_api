@@ -87,7 +87,11 @@ module.exports = {
         const product = await productService.getProductById(req.params.id, { populate });
         res.json(product);
     },
-
+    getProductByDeviceId: async (req, res) => {
+        const deviceId = req.params.deviceId;
+        const product = await productService.getProductByDeviceId(deviceId);
+        res.json(product)
+    },
     updateProduct: async (req, res) => {
         const { id } = req.params;
         const payload = req.body;

@@ -5,6 +5,6 @@ const asyncHandler = require('../helpers/asyncHandler')
 
 router.get("/results", asyncHandler(healthCheckController.findAllResult))
 router.post("/weekly-image", upload.single('image'), asyncHandler(healthCheckController.collectImageWeekly));
-
+router.get('/get/:hcid', asyncHandler(healthCheckController.findRecordById))
 
 module.exports = router;

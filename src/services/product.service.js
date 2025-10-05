@@ -1,5 +1,7 @@
 const createError = require("http-errors");
 const Product = require("../models/product.model");
+const Device = require('../models/device.model')
+const Field = require('../models/field.model')
 
 module.exports = {
     createProduct: async (payload) => {
@@ -45,7 +47,20 @@ module.exports = {
             throw error;
         }
     },
+    getProductByDeviceId: async (deviceId) => {
+        const device = await Device.findOne({device_id: deviceId}).select({apiKey: -1}).lean();
+        if(!device)  throw createError.NotFound('Device is not found !')
+        
+        const field = await Field.findOne({devices: device._id}).lean();
 
+        if(!field) throw createError.NotFound('Field is not found')
+        
+        const product = await Product.findOne({field: field._id})
+        .select('-_id')
+        .lean();
+
+        return product;
+    },
     updateProduct: async ({ id, payload }) => {
         try {
             const updated = await Product.findByIdAndUpdate(id, payload, { new: true, runValidators: true });

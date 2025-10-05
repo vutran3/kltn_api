@@ -1,5 +1,5 @@
 
-const {insertPredictHealth, findAllCheckResults, deleteDataByDeviceId} = require('../models/repositories/healthcheck.repo')
+const {insertPredictHealth, findAllCheckResults, deleteDataByDeviceId, findRecordById} = require('../models/repositories/healthcheck.repo')
 
 class HealthCheckService {
     static async insertPredictHealth(payload){
@@ -11,6 +11,9 @@ class HealthCheckService {
     }
     static async deleteDataById({deviceId}){
         return await deleteDataByDeviceId({deviceId})
+    }
+    static async findRecordById(id) {
+        return await findRecordById({id});
     }
 
 }
