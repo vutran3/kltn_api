@@ -1,7 +1,9 @@
 const { Types } = require('mongoose')
 const notification = require('../models/notification.model');
+const UserToken = require('../models/usertoken.model')
 const { getIO } = require('../socket');
 const { BadRequestError } = require('../core/error.response');
+const { pushToken } = require('../fcm');
 const toOid = (v) => (Types.ObjectId.isValid(String(v)) ? new Types.ObjectId(String(v)) : null);
 async function createAndEmit({ userId, deviceId, title, body, data }) {
     const doc = await notification.create({
@@ -16,9 +18,32 @@ async function createAndEmit({ userId, deviceId, title, body, data }) {
         data: doc.data
     })
 
+    const tokens = await UserToken.find({ user_id: userId }).distinct('token');
+    if (tokens.length) {
+        const payload = {
+            title,
+            body,
+            data: {
+                notificationId: String(doc._id),
+                ...(doc.data || {})
+            }
+        };
+        const result = await pushToken(tokens, payload);
+
+        const invalids = [];
+        result.responses.forEach((r, i) => {
+            if (!r.success && r.error?.code === 'messaging/registration-token-not-registered') {
+                invalids.push(tokens[i])
+            }
+        });
+
+        if (invalids.length) {
+            await UserToken.deleteMany({ token: { $in: invalids } });
+        }
+    }
     return doc;
 }
-async function getListNotification(page = 1, limit = 10, read = 'all', sort = 'ctime') {
+async function getListNotification({page = 1, limit = 10, read = 'all', sort = 'ctime'}) {
     const pageNum = Math.max(1, Number(page) || 1);
     const limitNum = Math.max(1, Number(limit) || 10);
     const skip = (pageNum - 1) * limitNum
@@ -54,24 +79,24 @@ async function markRead({ ids = [] }) {
     const unread = await notification.countDocuments({ read: false });
 
     return {
-        matched: result.matchedCount, 
-        modified: result.modifiedCount, 
+        matched: result.matchedCount,
+        modified: result.modifiedCount,
         unread
     }
 }
-async function deleteNotification({id = '', option = 'one'}){
+async function deleteNotification({ id = '', option = 'one' }) {
     let result = null, unread = 0;
-    if(toOid(id)){
-        if(option !== 'all'){
-            result = await notification.deleteOne({_id: toOid(id)}).lean();
-            unread = await notification.countDocuments({read: false});
+    if (toOid(id)) {
+        if (option !== 'all') {
+            result = await notification.deleteOne({ _id: toOid(id) }).lean();
+            unread = await notification.countDocuments({ read: false });
         }
-    }else{
-        if(option === "all"){
+    } else {
+        if (option === "all") {
             result = await notification.deleteMany({});
         }
     }
-    if(!result) throw new BadRequestError("Invalid request !!!")
+    if (!result) throw new BadRequestError("Invalid request !!!")
     return {
         deletedCount: result.deletedCount,
         unread
