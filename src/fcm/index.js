@@ -1,6 +1,7 @@
 const admin = require('firebase-admin')
 const serviceAccount = require('../../certs/firebase-service-account.json');
 const { BadRequestError } = require('../core/error.response');
+const UserToken = require('../models/usertoken.model')
 let initialized = false;
 
 function initFCM() {
@@ -57,12 +58,21 @@ async function pushToken(tokens, opts) {
             }
         }
     })
+    const toRemove = [];
     res.responses.forEach((r, idx) => {
         if (!r.success) {
-            console.error('FCM error for token', tokens[idx], r.error?.message);
+            const code = r?.error?.code || '';
+            if (code.includes('registration-token-not-registered') || code.includes('invalid-argument')) {
+                toRemove.push(tokens[i])
+            }
         }
     });
-    return { successCount: res.successCount, failureCount: res.failureCount, responses: res.responses }
+    let removed = 0;
+    if(toRemove.length) {
+        const delRes = await UserToken.deleteMany({token: {$in: toRemove}})
+        removed = delRes.deletedCount || 0;
+    }
+    return { successCount: res.successCount, failureCount: res.failureCount, responses: res.responses, removed }
 }
 
 module.exports = { pushToken }
