@@ -33,7 +33,53 @@ module.exports = {
             throw error;
         }
     },
+    // Enqueue a command for a device (by device_id)
+    enqueueCommand: async ({ device_id, cmd, minutes, at }) => {
+        try {
+            if (!device_id) throw createError.BadRequest("device_id is required");
+            if (!["on", "off", "on_for", "schedule", "cancel"].includes(cmd)) {
+                throw createError.BadRequest("invalid cmd");
+            }
+            if (cmd === "on_for" && !minutes) {
+                throw createError.BadRequest("minutes is required for on_for");
+            }
+            if (cmd === "schedule" && (!minutes || !at)) {
+                throw createError.BadRequest("at and minutes are required for schedule");
+            }
 
+            const dev = await Device.findOne({ device_id });
+            if (!dev) throw createError.NotFound("Device not found");
+
+            const item = { cmd, minutes, at, enqueuedAt: new Date() };
+            dev.commandQueue = dev.commandQueue || [];
+            dev.commandQueue.push(item);
+            await dev.save();
+            return item;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    // Pop next command (FIFO) for device (called by firmware poller)
+    nextCommandForDevice: async ({ device_id }) => {
+        try {
+            if (!device_id) throw createError.BadRequest("device_id is required");
+            const dev = await Device.findOne({ device_id });
+            if (!dev) throw createError.NotFound("Device not found");
+
+            const q = dev.commandQueue || [];
+            const idx = q.findIndex(c => !c.consumedAt);
+            if (idx === -1) return null; // no command
+
+            dev.commandQueue[idx].consumedAt = new Date();
+            await dev.save();
+
+            const { cmd, minutes, at } = q[idx];
+            return { cmd, minutes, at };
+        } catch (error) {
+            throw error;
+        }
+    },
     getDeviceById: async (id) => {
         try {
             const device = await Device.findById(id);
@@ -100,5 +146,39 @@ module.exports = {
         } catch (error) {
             throw error;
         }
-    }
+    },
+    // Upsert last status posted by device firmware
+    upsertStatus: async ({ device_id, on, hasSchedule, now, schedStart, schedEnd }) => {
+        try {
+            if (!device_id) throw createError.BadRequest("device_id is required");
+            const dev = await Device.findOne({ device_id });
+            if (!dev) throw createError.NotFound("Device not found");
+
+            dev.lastStatus = {
+                on: !!on,
+                hasSchedule: !!hasSchedule,
+                now: Number(now) || 0,
+                schedStart: Number(schedStart) || 0,
+                schedEnd: Number(schedEnd) || 0,
+            };
+            dev.lastSeenAt = new Date();
+            await dev.save();
+            return dev.lastStatus;
+        } catch (error) {
+            throw error;
+        }
+    },
+     // clear all queued commands
+    cancelAllCommands: async ({ device_id }) => {
+        try {
+            if (!device_id) throw createError.BadRequest("device_id is required");
+            const dev = await Device.findOne({ device_id });
+            if (!dev) throw createError.NotFound("Device not found");
+            dev.commandQueue = [];
+            await dev.save();
+            return { ok: true };
+        } catch (error) {
+            throw error;
+        }
+    },
 };
