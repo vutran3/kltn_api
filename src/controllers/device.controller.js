@@ -117,26 +117,6 @@ module.exports = {
         return res.status(201).json({ ok: true, command: item });
     },
 
-    // Device firmware: GET next command (returns 204 if none)
-    nextCommand: async (req, res) => {
-        const { deviceId } = req.headers['X-Device-Id'];
-        if (!deviceId) throw createError.BadRequest("deviceId param is required");
-        const cmd = await deviceService.nextCommandForDevice({ device_id: deviceId });
-        if (!cmd) return res.sendStatus(204);
-        return res.json(cmd);
-    },
-
-    // Device firmware: POST status payload
-    postStatus: async (req, res) => {
-        const { deviceId } = req.headers['X-Device-Id'];
-        const { on, hasSchedule, now, schedStart, schedEnd } = req.body || {};
-        if (!deviceId) throw createError.BadRequest("deviceId param is required");
-        const status = await deviceService.upsertStatus({
-            device_id: deviceId, on, hasSchedule, now, schedStart, schedEnd
-        });
-        return res.json({ ok: true, status });
-    },
-
     //Admin/App: clear the queue
     cancelAllCommands: async (req, res) => {
         const { deviceId } = req.headers['X-Device-Id'];
