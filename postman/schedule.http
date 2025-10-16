@@ -1,0 +1,47 @@
+@host = http://localhost:8000
+@device = esp32-01
+
+### Lấy thông tin điều khiển
+GET {{host}}/api/device-control?device_id={{device}}
+
+### Tắt máy bơm
+PUT {{host}}/api/device-control
+Content-Type: application/json
+
+{
+  "device_id": "{{device}}",
+  "is_active": false
+}
+
+### Bật máy bơm tức thì và giữ 5s
+PUT {{host}}/api/device-control
+Content-Type: application/json
+
+{
+  "device_id": "{{device}}",
+  "is_active": true,
+  "schedule_ms": 0,
+  "duration_ms": 5000
+}
+
+### Hẹn giờ sau 10s, kéo dài 5s
+PUT {{host}}/api/device-control
+Content-Type: application/json
+
+{
+  "device_id": "{{device}}",
+  "is_active": true, 
+  "schedule_ms":  1760551184834,
+  "duration_ms": 5000
+}
+
+### Bật/tắt vô thời hạn 
+PUT {{host}}/api/device-control
+Content-Type: application/json
+
+{
+  "device_id": "{{device}}",
+  "is_active": false,
+  "schedule_ms": 0,
+  "duration_ms": 0
+}
