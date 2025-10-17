@@ -1,33 +1,23 @@
-const Device = require("../models/device.model");
 const deviceService = require("../services/device.service");
 const createError = require("http-errors");
 
 module.exports = {
     createDevice: async (req, res) => {
         const { device_id, device_name, is_active, apiKey } = req.body;
-
         if (!device_id || !device_name) throw createError.BadRequest("device_id and device_name are required");
 
-        const device = await deviceService.createDevice({ device_id, device_name, is_active, apiKey });
+        const owner = res.locals?.user?._id;
 
+        const device = await deviceService.createDevice({ device_id, device_name, is_active, apiKey, owner });
         return res.status(201).json(device);
     },
 
     // List (with search, filter, pagination, sort, projection)
     listDevices: async (req, res) => {
-        const {
-            page = 1,
-            limit = 10,
-            search, // device_name & device_id
-            is_active,
-            sort = "-createdAt",
-            select
-        } = req.query;
-
-        const filter = {};
-        if (typeof is_active !== "undefined") {
-            filter.is_active = is_active === "true";
-        }
+        const { page = 1, limit = 10, search, is_active, sort = "-createdAt", select } = req.query;
+        const owner = res.locals?.user?._id;
+        const filter = { owner };
+        if (typeof is_active !== "undefined") filter.is_active = is_active === "true";
         if (search) {
             filter.$or = [
                 { device_name: { $regex: search, $options: "i" } },
@@ -38,15 +28,10 @@ module.exports = {
         const pageNum = Math.max(parseInt(page, 10) || 1, 1);
         const limitNum = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
 
-        const query = Device.find(filter);
-        if (select) query.select(select.split(",").join(" "));
-        query.sort(sort.split(",").join(" "));
-        query.skip((pageNum - 1) * limitNum).limit(limitNum);
-
         const { items, total } = await deviceService.getDevices({
             pageNum,
             limitNum,
-            select,
+            filter,
             sort
         });
 
@@ -66,13 +51,24 @@ module.exports = {
         res.json(device);
     },
 
-    // Get by Mongo _id
+    myDevices: async (req, res) => {
+        const { items } = await deviceService.getDevices({
+            filter: {
+                owner: res.locals.user._id
+            }
+        });
+
+        res.json({
+            msg: "Lấy danh sách thiết bị thành công",
+            data: items
+        });
+    },
+
     getDeviceByDeviceId: async (req, res) => {
         const device = await deviceService.getDeviceByDeviceId(req.params.deviceId);
         res.json(device);
     },
 
-    // Get by device_id (business id)
     updateDevice: async (req, res) => {
         const { id } = req.params;
         const payload = req.body;
@@ -85,16 +81,12 @@ module.exports = {
         res.json(updated);
     },
 
-    // Delete
     deleteDevice: async (req, res) => {
         const { id } = req.params;
-
-        const deleted = await deviceService.deleteDevice(id);
-
-        res.json({ message: "Device deleted" });
+        await deviceService.deleteDevice(id);
+        res.json({ message: "Xóa thiết bị thành công" });
     },
 
-    // Activate / Deactivate
     setActive: async (req, res) => {
         const { id } = req.params;
         const { is_active } = req.body;
@@ -107,5 +99,33 @@ module.exports = {
         });
 
         res.json(updated);
+    },
+    unassignedDevices: async (req, res) => {
+        if (!res.locals?.user?._id) throw createError.Unauthorized("Vui lòng đăng nhập");
+
+        const { page = 1, limit = 10, search, is_active, sort = "-createdAt" } = req.query;
+        const ownerId = res.locals.user._id;
+
+        const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+        const limitNum = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+
+        const { items, total } = await deviceService.getUnassignedDevices({
+            ownerId,
+            pageNum,
+            limitNum,
+            search,
+            is_active,
+            sort
+        });
+
+        res.json({
+            items,
+            pagination: {
+                page: pageNum,
+                limit: limitNum,
+                total,
+                pages: Math.ceil(total / limitNum)
+            }
+        });
     }
 };

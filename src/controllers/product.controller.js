@@ -17,6 +17,7 @@ module.exports = {
             status,
             images
         } = req.body;
+        const owner = res.locals?.user?._id;
 
         if (!field || !name) throw createError.BadRequest("field and name are required");
         if (status && !STATUS_ENUM.includes(status)) {
@@ -26,6 +27,7 @@ module.exports = {
         const product = await productService.createProduct({
             field,
             name,
+            owner,
             type,
             planting_date,
             expected_harvest_date,
@@ -39,20 +41,11 @@ module.exports = {
         return res.status(201).json(product);
     },
 
-    // List (with search, filter, pagination, sort, projection)
+    // List (search, filter, pagination, sort, projection)
     listProducts: async (req, res) => {
-        const {
-            page = 1,
-            limit = 10,
-            search, // name & type
-            field,
-            status, // growing | harvesting | procesing
-            sort = "-createdAt",
-            select,
-            populate
-        } = req.query;
-
-        const filter = {};
+        const { page = 1, limit = 10, search, field, status, sort = "-createdAt", select, populate } = req.query;
+        const owner = res.locals?.user?._id;
+        const filter = { owner };
         if (field) filter.field = field;
         if (status) filter.status = status;
         if (search) {
@@ -90,14 +83,14 @@ module.exports = {
     getProductByDeviceId: async (req, res) => {
         const deviceId = req.params.deviceId;
         const product = await productService.getProductByDeviceId(deviceId);
-        res.json(product)
+        res.json(product);
     },
     updateProduct: async (req, res) => {
         const { id } = req.params;
         const payload = req.body;
 
         if (payload.status) {
-            const STATUS_ENUM = ["growing", "harvesting", "procesing"];
+            const STATUS_ENUM = ["growing", "harvesting", "selling"];
             if (!STATUS_ENUM.includes(payload.status)) {
                 throw createError.BadRequest(`status must be one of: ${STATUS_ENUM.join(", ")}`);
             }

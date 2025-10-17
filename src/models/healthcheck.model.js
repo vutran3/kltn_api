@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { Schema, model } = require("mongoose");
 const DOCUMENT_NAME = "HealthCheck";
 const COLLECTION_NAME = "healthchecks";
 
-const healthCheckSchema = new mongoose.Schema(
+const healthCheckSchema = new Schema(
     {
-        product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+        product_id: { type: Schema.Types.ObjectId, ref: "Product", required: true },
         device_id: { type: String, required: true },
         inspection_date: { type: Date, required: true },
         predicting_description: { type: String },
@@ -21,4 +20,4 @@ const healthCheckSchema = new mongoose.Schema(
 healthCheckSchema.index({ inspection_date: 1 });
 healthCheckSchema.index({ device_id: 1, inspection_date: -1 });
 
-module.exports = mongoose.model(DOCUMENT_NAME, healthCheckSchema);
+module.exports = model(DOCUMENT_NAME, healthCheckSchema);

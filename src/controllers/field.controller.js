@@ -1,11 +1,10 @@
 const createError = require("http-errors");
-const Field = require("../models/field.model");
 const fieldService = require("../services/field.service");
 
 module.exports = {
     createField: async (req, res) => {
-        const { name, devices, owner, established_date, description, total_area, field_type, is_active } = req.body;
-
+        const { name, devices, established_date, description, total_area, field_type, is_active } = req.body;
+        const owner = res.locals?.user?._id;
         if (!name) throw createError.BadRequest("name is required");
 
         const field = await fieldService.createField({
@@ -22,19 +21,12 @@ module.exports = {
         return res.status(201).json(field);
     },
 
-    // List (with search, filter, pagination, sort, projection)
+    // List (search, filter, pagination, sort, projection)
     listFields: async (req, res) => {
-        const {
-            page = 1,
-            limit = 10,
-            search, // name & field_type
-            is_active,
-            sort = "-createdAt",
-            select,
-            populate
-        } = req.query;
+        const { page = 1, limit = 10, search, is_active, sort = "-createdAt", select, populate } = req.query;
+        const owner = res.locals?.user?._id;
 
-        const filter = {};
+        const filter = { owner };
         if (typeof is_active !== "undefined") filter.is_active = is_active === "true";
         if (search) {
             filter.$or = [
@@ -86,7 +78,6 @@ module.exports = {
         res.json({ message: "Field deleted" });
     },
 
-    // Activate / Deactivate
     setActive: async (req, res) => {
         const { id } = req.params;
         const { is_active } = req.body;

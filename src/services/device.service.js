@@ -1,27 +1,21 @@
 const Device = require("../models/device.model");
 const createError = require("http-errors");
+const Field = require("../models/field.model");
 
 module.exports = {
-    createDevice: async ({ device_id, device_name, is_active, apiKey }) => {
-        try {
-            const existed = await Device.findOne({ device_id });
-
-            if (existed) throw createError.Conflict("device_id already exists");
-
-            const device = await Device.create({ device_id, device_name, is_active, apiKey });
-
-            return device;
-        } catch (error) {
-            throw error;
-        }
+    createDevice: async ({ device_id, device_name, is_active, apiKey, owner }) => {
+        const existed = await Device.findOne({ device_id });
+        if (existed) throw createError.Conflict("device_id already exists");
+        const device = await Device.create({ device_id, device_name, is_active, apiKey, owner });
+        return device;
     },
 
     // List (with search, filter, pagination, sort, projection)
     getDevices: async ({ pageNum, limitNum, filter, sort }) => {
         try {
             const query = Device.find(filter);
-            query.sort(sort.split(",").join(" "));
-            query.skip((pageNum - 1) * limitNum).limit(limitNum);
+            if (sort) query.sort(sort.split(",").join(" "));
+            if (pageNum && limitNum) query.skip((pageNum - 1) * limitNum).limit(limitNum);
 
             const [items, total] = await Promise.all([query, Device.countDocuments(filter)]);
 
@@ -46,7 +40,6 @@ module.exports = {
         }
     },
 
-    // Get by Mongo _id
     getDeviceByDeviceId: async (device_id) => {
         try {
             const device = await Device.findOne({ device_id });
@@ -97,6 +90,30 @@ module.exports = {
             if (!updated) throw createError.NotFound("Device not found");
 
             return updated;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getUnassignedDevices: async ({ ownerId, pageNum = 1, limitNum = 10, search, is_active, sort = "-createdAt" }) => {
+        try {
+            const fieldDeviceIds = await Field.distinct("devices", { owner: ownerId });
+
+            const filter = { owner: ownerId, _id: { $nin: fieldDeviceIds } };
+            if (typeof is_active !== "undefined") filter.is_active = is_active === true || is_active === "true";
+            if (search) {
+                filter.$or = [
+                    { device_name: { $regex: search, $options: "i" } },
+                    { device_id: { $regex: search, $options: "i" } }
+                ];
+            }
+
+            const query = Device.find(filter);
+            if (sort) query.sort(sort.split(",").join(" "));
+            if (pageNum && limitNum) query.skip((pageNum - 1) * limitNum).limit(limitNum);
+
+            const [items, total] = await Promise.all([query, Device.countDocuments(filter)]);
+            return { items, total };
         } catch (error) {
             throw error;
         }

@@ -1,10 +1,21 @@
 @baseUrl = http://localhost:8000
-@contentType = application/json
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tranducvu234@gmail.com",
+  "password": "P@ssw0rd!"
+}
 
 ### CREATE DEVICE
 # @name createDevice
 POST {{baseUrl}}/api/devices
-Content-Type: {{contentType}}
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
 
 {
   "device_id": "esp32-{{$timestamp}}",
@@ -14,19 +25,31 @@ Content-Type: {{contentType}}
 
 ### LIST DEVICES (phân trang + tìm kiếm + sort + chọn trường)
 GET {{baseUrl}}/api/devices?page=1&limit=10&search=esp32&is_active=true&sort=-createdAt&select=device_id,device_name,is_active,createdAt
-Accept: {{contentType}}
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcwMTkyMiwiZXhwIjoxNzYwNzAyODIyfQ.CdAho-DHYvUV_nyHPpRK6W38Lhn-M9xvnAoIbDSC69A
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
 
 ### GET BY _id 
 GET {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}
-Accept: {{contentType}}
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
 
 ### GET BY device_id
 GET {{baseUrl}}/api/devices/by-device-id/{{createDevice.response.body.$.device_id}}
-Accept: {{contentType}}
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
 
 ### UPDATE
 PATCH {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}
-Content-Type: {{contentType}}
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
 
 {
   "device_name": "Main Greenhouse Node"
@@ -34,13 +57,18 @@ Content-Type: {{contentType}}
 
 ### TOGGLE ACTIVE
 PATCH {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}/active
-Content-Type: {{contentType}}
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
 
 {
   "is_active": true
 }
 
-
 ### DELETE – xóa thiết bị vừa tạo
 DELETE {{baseUrl}}/api/devices/{{createDevice.response.body.$._id}}
-Accept: {{contentType}}
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298

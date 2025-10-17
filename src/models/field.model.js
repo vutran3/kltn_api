@@ -1,10 +1,9 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { Schema, model } = require("mongoose");
 
 const DOCUMENT_NAME = "Field";
 const COLLECTION_NAME = "fields";
 
-const fieldSchema = new mongoose.Schema(
+const fieldSchema = new Schema(
     {
         name: { type: String, required: true },
         devices: { type: [Schema.Types.ObjectId], ref: "Device" },
@@ -18,4 +17,5 @@ const fieldSchema = new mongoose.Schema(
     { collection: COLLECTION_NAME }
 );
 
-module.exports = mongoose.model(DOCUMENT_NAME, fieldSchema);
+const Field = model(DOCUMENT_NAME, fieldSchema);
+module.exports = Field;

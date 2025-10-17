@@ -1,11 +1,12 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const DOCUMENT_NAME = "Product";
 const COLLECTION_NAME = "products";
 
-const productSchema = new mongoose.Schema(
+const productSchema = new Schema(
     {
-        field: { type: mongoose.Schema.Types.ObjectId, ref: "Field", required: true },
+        field: { type: Schema.Types.ObjectId, ref: "Field", required: true },
+        owner: { type: Schema.Types.ObjectId, ref: "User" },
         name: { type: String, required: true },
         type: String,
         planting_date: Date,
@@ -15,11 +16,11 @@ const productSchema = new mongoose.Schema(
         price_per_unit: Number,
         status: {
             type: String,
-            enum: ["growing", "harvesting", "procesing"]
+            enum: ["growing", "harvesting", "selling"]
         },
         images: [String]
     },
     { collection: COLLECTION_NAME }
 );
 
-module.exports = mongoose.model(DOCUMENT_NAME, productSchema);
+module.exports = model(DOCUMENT_NAME, productSchema);

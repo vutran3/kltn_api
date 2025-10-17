@@ -1,12 +1,11 @@
 const createError = require("http-errors");
 const Product = require("../models/product.model");
-const Device = require('../models/device.model')
-const Field = require('../models/field.model')
+const Device = require("../models/device.model");
+const Field = require("../models/field.model");
 
 module.exports = {
     createProduct: async (payload) => {
         try {
-            // images can be string[] or undefined
             const product = await Product.create(payload);
             return product;
         } catch (error) {
@@ -14,7 +13,7 @@ module.exports = {
         }
     },
 
-    // List (with search, filter, pagination, sort, projection)
+    // List (search, filter, pagination, sort, projection)
     getProducts: async ({ pageNum, limitNum, filter = {}, sort = "-createdAt", select, populate }) => {
         try {
             const query = Product.find(filter);
@@ -22,7 +21,6 @@ module.exports = {
             query.sort(sort.split(",").join(" "));
             query.skip((pageNum - 1) * limitNum).limit(limitNum);
 
-            // optional populate: ?populate=field
             if (populate && String(populate).split(",").includes("field")) {
                 query.populate("field", "name field_type is_active");
             }
@@ -48,16 +46,14 @@ module.exports = {
         }
     },
     getProductByDeviceId: async (deviceId) => {
-        const device = await Device.findOne({device_id: deviceId}).select({apiKey: -1}).lean();
-        if(!device)  throw createError.NotFound('Device is not found !')
-        
-        const field = await Field.findOne({devices: device._id}).lean();
+        const device = await Device.findOne({ device_id: deviceId }).select({ apiKey: -1 }).lean();
+        if (!device) throw createError.NotFound("Device is not found !");
 
-        if(!field) throw createError.NotFound('Field is not found')
-        
-        const product = await Product.findOne({field: field._id})
-        .select('-_id')
-        .lean();
+        const field = await Field.findOne({ devices: device._id }).lean();
+
+        if (!field) throw createError.NotFound("Field is not found");
+
+        const product = await Product.findOne({ field: field._id }).select("-_id").lean();
 
         return product;
     },

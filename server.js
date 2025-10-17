@@ -12,9 +12,9 @@ const app = express();
 
 // ===== Tạo http server & socket.io =====
 
-const http = require('http');
+const http = require("http");
 const server = http.createServer(app);
-const {initSocket} = require('./src/socket');
+const { initSocket } = require("./src/socket");
 const io = initSocket(server);
 
 const uploadDir = path.join(__dirname, "uploads");
@@ -31,24 +31,6 @@ app.use(
     })
 );
 app.use("/api", routes);
-
-app.use("/api/upload", express.raw({ type: "image/jpeg", limit: "20mb" }));
-
-app.post("/api/upload", (req, res) => {
-    try {
-        const buf = req.body; // Buffer ảnh
-        const filename = `frame_${Date.now()}.jpg`;
-        const filepath = path.join(uploadDir, filename);
-
-        fs.writeFileSync(filepath, buf);
-        console.log(`Saved ${filename} (${buf.length} bytes)`);
-
-        res.json({ ok: true, file: filename, size: buf.length });
-    } catch (e) {
-        console.error(e);
-        res.status(500).json({ ok: false, error: String(e) });
-    }
-});
 
 app.use((err, req, res, next) => {
     console.error(err);

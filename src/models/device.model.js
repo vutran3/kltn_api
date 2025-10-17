@@ -9,6 +9,7 @@ const deviceSchema = new Schema(
             type: String,
             required: true
         },
+        owner: { type: Schema.Types.ObjectId, ref: "User" },
         device_name: {
             type: String,
             required: true
