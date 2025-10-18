@@ -1,5 +1,5 @@
 const admin = require('firebase-admin')
-const serviceAccount = require('../../certs/firebase-service-account.json');
+const serviceAccount = require("../../firebase-service-account.json");
 const { BadRequestError } = require('../core/error.response');
 let initialized = false;
 
