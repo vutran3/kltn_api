@@ -1,3 +1,5 @@
+const { Types } = require("mongoose");
+
 const toNumberOrUndefined = (v) => {
     if (v === null || v === undefined || v === "") return undefined;
     const n = Number(v);
@@ -41,8 +43,28 @@ const parseDateMaybe = (x) => {
     return undefined;
 };
 
+const parseDate = (v) => {
+    if (v == null) return null;
+    const n = Number(v);
+    const d = Number.isFinite(n) ? new Date(n) : new Date(v);
+    return Number.isNaN(d.getTime()) ? null : d;
+};
+
+const convertToObjectId = (id) => {
+    return new Types.ObjectId(id);
+};
+
+function safeUser(u) {
+    const obj = u.toObject ? u.toObject() : { ...u };
+    delete obj.password;
+    return obj;
+}
+
 module.exports = {
+    safeUser,
     toNumberOrUndefined,
     buildReadingFromBody,
-    parseDateMaybe
+    parseDateMaybe,
+    parseDate,
+    convertToObjectId
 };

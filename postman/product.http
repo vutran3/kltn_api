@@ -1,0 +1,139 @@
+@baseUrl = http://localhost:8000
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tranducvu234@gmail.com",
+  "password": "P@ssw0rd!"
+}
+
+### FIELD — CREATE
+# @name createField
+POST {{baseUrl}}/api/fields
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "name": "Nhà kính A {{$timestamp}}",
+  "established_date": "2025-08-10",
+  "description": "Khu nhà kính thử nghiệm",
+  "total_area": 1200,
+  "field_type": "nhà kính",
+  "is_active": true,
+  "devices": []
+}
+
+### FIELD — GET BY ID 
+GET {{baseUrl}}/api/fields/{{createField.response.body.$._id}}?populate=devices
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+### FIELD — LIST (search, filter, sort, select, populate)
+GET {{baseUrl}}/api/fields?search=nh%C3%A0%20k%C3%ADnh&is_active=true&sort=-createdAt&select=name,field_type,total_area,is_active&populate=devices
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+### FIELD — UPDATE (PATCH)
+PATCH {{baseUrl}}/api/fields/{{createField.response.body.$._id}}
+Content-Type: application/json
+
+{
+  "field_type": "vườn mái",
+  "total_area": 1350,
+  "description": "Đã nâng cấp hệ tưới"
+}
+
+### FIELD — TOGGLE ACTIVE (OFF)
+PATCH {{baseUrl}}/api/fields/{{createField.response.body.$._id}}/active
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "is_active": false
+}
+
+
+### PRODUCT — CREATE (tham chiếu field vừa tạo)
+# @name createProduct
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "field": "{{createField.response.body.$._id}}",
+  "name": "Xà lách Romaine {{$timestamp}}",
+  "type": "rau",
+  "planting_date": "2025-08-01",
+  "expected_harvest_date": "2025-09-01",
+  "weight_unit": "kg",
+  "price_per_unit": 25000,
+  "status": "growing",
+  "images": ["https://example.com/1.jpg", "https://example.com/2.jpg"]
+}
+
+### PRODUCT — GET BY ID (có populate field)
+GET {{baseUrl}}/api/products/{{createProduct.response.body.$._id}}?populate=field
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+### PRODUCT — LIST (filter theo field/status, search, select, populate, sort)
+GET {{baseUrl}}/api/products?field={{createField.response.body.$._id}}&status=growing&search=x%C3%A0&select=name,type,status,price_per_unit&populate=field&sort=-createdAt
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5MjYyMywiZXhwIjoxNzYwNjkzNTIzfQ.3V1HwAOnkgFLLvkZMcb4UVcZrldNJPS3kluH6KvcoA8
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5MjYyMywiZXhwIjoxNzYxMjk3NDIzfQ.jB4IrG13UF0xuT0eV0JyaOP_ynoaiABasiLsol0UOSA
+
+### PRODUCT - LIST
+GET {{baseUrl}}/api/products
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+### PRODUCT — UPDATE 
+PATCH {{baseUrl}}/api/products/{{createProduct.response.body.$._id}}
+Content-Type: application/json
+
+{
+  "status": "harvesting",
+  "price_per_unit": 28000
+}
+
+### PRODUCT — DELETE
+DELETE {{baseUrl}}/api/products/{{createProduct.response.body.$._id}}
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+### FIELD — DELETE (xóa sau khi đã xóa product)
+DELETE {{baseUrl}}/api/fields/{{createField.response.body.$._id}}
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+### (OPTIONAL) PRODUCT — THỬ LỖI: thiếu field (400)
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "name": "Thiếu field sẽ lỗi",
+  "status": "growing"
+}

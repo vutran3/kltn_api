@@ -1,0 +1,61 @@
+@host = http://localhost:8000
+
+### Lấy thông tin điều khiển
+GET {{host}}/api/device-control?device_id=esp32-01
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+### Tắt máy bơm
+PUT {{host}}/api/device-control
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTUzMCwiZXhwIjoxNzYwNjk1NTUwfQ.9ZPTDzEMwADDbkYBp3ZrwJFPNbmIuIHam_22YDW3aZY
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDY5NTQ1OCwiZXhwIjoxNzYxMzAwMjU4fQ.Cd_ANcPJKNDlVXjoeuJG_Co5CS88awLKoXdkwnbH89Q
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "device_id": "esp32-01",
+  "is_active": false
+}
+
+### Bật máy bơm tức thì và giữ 5s
+PUT {{host}}/api/device-control
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcyMjg0OCwiZXhwIjoxNzYwNzIzNzQ4fQ.Px6xQtTHDCyA5Trbb9mWNAkpI4Qi71hTuI5omQkADIE
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcyMjg0OCwiZXhwIjoxNzYxMzI3NjQ4fQ.P8DVKgP5m94tbM_JS4Lv9HNjdRugRLGZocbDEsjR9ns
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "device_id": "esp32-01",
+  "is_active": true,
+  "schedule_ms": 0,
+  "duration_ms": 5000
+}
+
+### Hẹn giờ sau 10s, kéo dài 5s
+PUT {{host}}/api/device-control
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcyMjg0OCwiZXhwIjoxNzYwNzIzNzQ4fQ.Px6xQtTHDCyA5Trbb9mWNAkpI4Qi71hTuI5omQkADIE
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcyMjg0OCwiZXhwIjoxNzYxMzI3NjQ4fQ.P8DVKgP5m94tbM_JS4Lv9HNjdRugRLGZocbDEsjR9ns
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "device_id": "esp32-01",
+  "is_active": true, 
+  "schedule_ms":  1760723515672,
+  "duration_ms": 5000
+}
+
+### Bật/tắt vô thời hạn 
+PUT {{host}}/api/device-control
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcyMzkxMCwiZXhwIjoxNzYwNzI0ODEwfQ.LcTvuDlKjXnIgb27tMuZtQnnk2bRtfHqLit-jMYHstc
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcyMjg0OCwiZXhwIjoxNzYxMzI3NjQ4fQ.P8DVKgP5m94tbM_JS4Lv9HNjdRugRLGZocbDEsjR9ns
+X-Client-Id: 68f20501066c05256f6b7298
+
+{
+  "device_id": "esp32-01",
+  "is_active": false,
+  "schedule_ms": 0,
+  "duration_ms": 0
+}

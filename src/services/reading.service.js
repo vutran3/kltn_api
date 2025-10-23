@@ -1,11 +1,5 @@
 const { ReadingBucket } = require("../models/reading.model");
 
-/**
- * Ghi 1 mẫu đọc vào bucket theo deviceId + ts (upsert)
- * @param {string} deviceId
- * @param {object} reading  { t: Date, ...metrics }
- * @param {object} [options] { bucketMs?: number, keepRaw?: boolean }
- */
 async function addReadingToBucket(deviceId, reading, options = {}) {
     try {
         await ReadingBucket.addReading(deviceId, reading, options);
@@ -16,12 +10,6 @@ async function addReadingToBucket(deviceId, reading, options = {}) {
     }
 }
 
-/**
- * Truy vấn dữ liệu thô theo khoảng thời gian [from, to).
- * Nếu không truyền from/to, sẽ lấy N mẫu mới nhất.
- * @param {object} params { deviceId, from?, to?, limit?, sort? }
- * sort: 1 (tăng dần) | -1 (giảm dần), mặc định -1
- */
 async function getSensorData({ deviceId, from, to, limit, sort = -1 }) {
     try {
         // Case A: Có from/to

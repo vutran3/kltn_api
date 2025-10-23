@@ -1,0 +1,30 @@
+@host = http://localhost:8000
+
+### Register
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Tran Duc Vu",
+  "email": "tranducvu234@gmail.com",
+  "password": "P@ssw0rd!",
+  "phone": "0943608225"
+}
+
+### Login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tranducvu234@gmail.com",
+  "password": "P@ssw0rd!"
+}
+
+### Get me
+GET {{host}}/api/auth/get-me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcwMDU4MiwiZXhwIjoxNzYwNzAxNDgyfQ.q3Z77FRpKENOyBFXtFocUh6TTNwoW_FXC875ZhQNrjU
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2MDcwMDU4MiwiZXhwIjoxNzYxMzA1MzgyfQ.MfsCzcITi64HLz5XNGdjtpC4jQEfWNZrHxnP2G2UE_E
+X-Client-Id: 68f20501066c05256f6b7298
+
+
+

@@ -1,6 +1,13 @@
 const router = require("express").Router();
-const iotRoutes = require("./iot.routes");
 
-router.use("/api", iotRoutes);
-
+router.use("/auth", require("./auth.routes"));
+router.use("/health-check", require("./healthcheck.routes"));
+router.use("/readings", require("./readings.routes"));
+router.use("/devices", require("./devices.routes"));
+router.use("/products", require("./products.routes"));
+router.use("/fields", require("./fields.routes"));
+router.use("/notification", require("./notification.routes"));
+router.use("/users", require("./user.routes"));
+router.use("/device-control", require("./schedule.routes"));
+router.use("/soil-advisor", require("./soilAdvisor.routes"));
 module.exports = router;

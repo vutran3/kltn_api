@@ -1,4 +1,4 @@
-const iotService = require("../services/iot.service");
+const readingService = require("../services/reading.service");
 const { buildReadingFromBody, parseDateMaybe } = require("../utils");
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
             const reading = buildReadingFromBody(b, ts);
 
             // Ghi vào bucket
-            const saved = await iotService.addReadingToBucket(deviceId, reading);
+            const saved = await readingService.addReadingToBucket(deviceId, reading);
 
             return res.status(201).json({
                 status: 201,
@@ -43,7 +43,7 @@ module.exports = {
             const limitReq = parseInt(req.query.limit || "50", 10);
             const limit = Math.min(Number.isFinite(limitReq) ? limitReq : 50, 500);
 
-            const rows = await iotService.getSensorData({
+            const rows = await readingService.getSensorData({
                 deviceId,
                 from,
                 to,
@@ -74,7 +74,7 @@ module.exports = {
                 return res.status(400).json({ error: "deviceId query is required" });
             }
 
-            const last = await iotService.getLatestSensorData({ deviceId });
+            const last = await readingService.getLatestSensorData({ deviceId });
 
             res.status(200).json({
                 status: 200,
