@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 const admin = require("firebase-admin");
 const serviceAccount = require("../../firebase-service-account.json");
 const { BadRequestError } = require("../core/error.response");
-=======
-const admin = require('firebase-admin')
-const serviceAccount = require("../../firebase-service-account.json");
-const { BadRequestError } = require('../core/error.response');
->>>>>>> 8e6dd4de6d1f278558fff5c9ee111e144fc6f131
 let initialized = false;
 
 function initFCM() {
@@ -69,8 +63,4 @@ async function pushToken(tokens, opts) {
     return { successCount: res.successCount, failureCount: res.failureCount, responses: res.responses };
 }
 
-<<<<<<< HEAD
 module.exports = { pushToken };
-=======
-module.exports = { pushToken }
->>>>>>> 8e6dd4de6d1f278558fff5c9ee111e144fc6f131
