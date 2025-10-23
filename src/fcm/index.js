@@ -1,6 +1,6 @@
-const admin = require('firebase-admin')
-const serviceAccount = require('../../certs/firebase-service-account.json');
-const { BadRequestError } = require('../core/error.response');
+const admin = require("firebase-admin");
+const serviceAccount = require("../../firebase-service-account.json");
+const { BadRequestError } = require("../core/error.response");
 let initialized = false;
 
 function initFCM() {
@@ -29,21 +29,19 @@ async function pushToken(tokens, opts) {
         title,
         body,
         data = {},
-        channelId = 'high-priority',
-        androidPriority = 'high',
+        channelId = "high-priority",
+        androidPriority = "high",
         ttlSeconds = 3600,
-        sound = 'default',
+        sound = "default"
     } = opts || {};
 
     if (!tokens || tokens.length === 0) {
         return { successCount: 0, failureCount: 0, responses: [] };
     }
 
-    if (tokens.length > 500) throw BadRequestError('FCM multicast chỉ hỗ trợ tối đa 500 tokens/lần gửi')
+    if (tokens.length > 500) throw BadRequestError("FCM multicast chỉ hỗ trợ tối đa 500 tokens/lần gửi");
 
-    const safeData = Object.fromEntries(
-        Object.entries({ ...data, title, body }).map(([k, v]) => [k, String(v)])
-    );
+    const safeData = Object.fromEntries(Object.entries({ ...data, title, body }).map(([k, v]) => [k, String(v)]));
 
     const res = await admin.messaging().sendEachForMulticast({
         tokens,
@@ -56,13 +54,13 @@ async function pushToken(tokens, opts) {
                 sound
             }
         }
-    })
+    });
     res.responses.forEach((r, idx) => {
         if (!r.success) {
-            console.error('FCM error for token', tokens[idx], r.error?.message);
+            console.error("FCM error for token", tokens[idx], r.error?.message);
         }
     });
-    return { successCount: res.successCount, failureCount: res.failureCount, responses: res.responses }
+    return { successCount: res.successCount, failureCount: res.failureCount, responses: res.responses };
 }
 
-module.exports = { pushToken }
+module.exports = { pushToken };

@@ -1,4 +1,3 @@
-const { TokenExpiredError } = require("jsonwebtoken");
 const { verifyAccessToken, signAccessToken, verifyRefreshToken } = require("../utils/jwt");
 const createError = require("http-errors");
 const User = require("../models/user.model");
@@ -45,7 +44,10 @@ const auth = async (req, res, next) => {
             });
         }
 
-        if (error) throw createError.BadRequest("Xác thực người dùng lỗi");
+        if (error) {
+            console.log(error);
+            throw createError.BadRequest("Xác thực người dùng lỗi");
+        }
     } catch (error) {
         next(error);
     }
