@@ -38,7 +38,7 @@ class HealthCheckController {
         const up = await uploadBufferToCloudinary(imgBuffer, {
             folder,
             public_id: publicId,
-            format,
+            format
         });
 
         // 5) GỌI PREDICT
@@ -52,35 +52,34 @@ class HealthCheckController {
             const form = new FormData();
             form.append("file", imgBuffer, {
                 filename: `${publicId}.${format}`,
-                contentType,
+                contentType
             });
             const { data } = await axios.post(LOCAL_PREDICT_URL, form, {
                 params: { conf_threshold: confThreshold },
                 headers: form.getHeaders(),
-                timeout: 60_000,
+                timeout: 60_000
             });
             return data;
         }
 
-    
         async function callHuggingFacePredict() {
             const HF_PREDICT_URL = process.env.HF_PREDICT_URL;
             const HF_API_TOKEN = process.env.HF_API_TOKEN;
-            
+
             if (!HF_PREDICT_URL || !HF_API_TOKEN) {
                 throw new Error("HF_PREDICT_URL / HF_API_TOKEN is missing");
             }
-            const body = { inputs: { image_url: imageUrl},  conf: confThreshold };
-            
+            const body = { inputs: { image_url: imageUrl }, conf: confThreshold };
+
             const { data } = await axios.post(HF_PREDICT_URL, body, {
                 headers: {
                     Authorization: `Bearer ${HF_API_TOKEN}`,
                     "Content-Type": "application/json",
-                    Accept: "application/json",
+                    Accept: "application/json"
                 },
-                timeout: 60_000,
+                timeout: 60_000
             });
-           
+
             return data;
         }
 
@@ -94,7 +93,11 @@ class HealthCheckController {
                 try {
                     predict = await callHuggingFacePredict();
                 } catch (e) {
-                    console.warn("[predict][hf] failed, fallback local:", e?.response?.status, e?.response?.data || e?.message);
+                    console.warn(
+                        "[predict][hf] failed, fallback local:",
+                        e?.response?.status,
+                        e?.response?.data || e?.message
+                    );
                     predict = await callLocalPredict();
                 }
             }
@@ -143,7 +146,6 @@ class HealthCheckController {
         }).send(res);
     };
 
-
     findAllResult = async (req, res, next) => {
         new SuccessResponse({
             message: "Find all check result",
@@ -157,6 +159,5 @@ class HealthCheckController {
             metadata: await HealthCheckService.findRecordById(req.params.hcid)
         }).send(res);
     };
-
 }
 module.exports = new HealthCheckController();
