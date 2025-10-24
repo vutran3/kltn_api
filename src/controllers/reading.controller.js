@@ -1,21 +1,19 @@
 const readingService = require("../services/reading.service");
 const { buildReadingFromBody, parseDateMaybe } = require("../utils");
+const createError = require("http-errors");
 
 module.exports = {
     collectReadingData: async (req, res, next) => {
         try {
             const b = req.body || {};
-            // if (!b.deviceId) {
-            //     return res.status(400).json({ error: "deviceId is required" });
-            // }
+            const deviceId = req.headers["x-device-id"];
+            if (!deviceId) throw createError.BadRequest("Mã thiết bị không hợp lệ");
+
             const nowMs = Date.now();
             const tsMs = typeof b.ts === "number" ? b.ts : nowMs;
             const ts = new Date(tsMs);
 
-            const deviceId = String(b.deviceId);
             const reading = buildReadingFromBody(b, ts);
-
-            // Ghi vào bucket
             const saved = await readingService.addReadingToBucket(deviceId, reading);
 
             return res.status(201).json({
@@ -50,6 +48,8 @@ module.exports = {
                 limit,
                 sort
             });
+
+            console.log(rows[0]);
 
             res.status(200).json({
                 status: 200,

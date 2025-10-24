@@ -12,12 +12,11 @@ const buildReadingFromBody = (b, ts) => {
 
     return {
         t: ts,
-        airTemperature: toNumberOrUndefined(b.airTemperature),
-        airHumidity: toNumberOrUndefined(b.airHumidity),
-        lightRaw: toNumberOrUndefined(b.lightRaw),
-        rainRaw: toNumberOrUndefined(b.rainRaw),
-        soilTemperature: toNumberOrUndefined(b.soilTemperature),
-        soilHumidity: soilHumidity,
+        air_temperature: toNumberOrUndefined(b.airTemperature),
+        air_humidity: toNumberOrUndefined(b.airHumidity),
+        light_raw: toNumberOrUndefined(b.lightRaw),
+        soil_temperature: toNumberOrUndefined(b.soilTemperature),
+        soil_humidity: soilHumidity,
         nitrogen: toNumberOrUndefined(b.nitrogen),
         phosphorus: toNumberOrUndefined(b.phosphorus),
         potassium: toNumberOrUndefined(b.potassium),

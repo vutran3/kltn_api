@@ -1,0 +1,46 @@
+### Upload image
+POST http://localhost:8000/api/rag/image
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="sauto.jpg"
+Content-Type: image/jpg
+
+< ./data/sauto.jpg
+--WebAppBoundary
+Content-Disposition: form-data; name="content"
+Content-Type: application/json
+
+Tên bệnh: Sâu hại trên rau cải
+Dấu hiệu: Lá bị thủng lỗ, bị ăn nham nhở hoặc chỉ còn lại gân lá; trên thân, ngọn hoặc bắp cải có thể thấy ấu trùng hoặc sâu non màu xanh, nâu hoặc đen. Một số loại sâu còn để lại phân nhỏ màu đen trên mặt lá hoặc bẹ. Cây bị hại nặng sẽ còi cọc, không cuốn bắp, năng suất giảm mạnh.
+Tác nhân: Gây ra bởi nhiều loài côn trùng khác nhau, phổ biến nhất là sâu tơ (Plutella xylostella), sâu xanh bướm trắng (Pieris rapae), bọ nhảy (Phyllotreta striolata) và rệp muội (Aphididae).
+Nguy cơ tiềm ẩn:
+
+Sâu hại phát triển mạnh trong điều kiện nhiệt độ 25–30°C, thời tiết khô, và ruộng rậm rạp, ít thiên địch.
+
+Nếu không phòng trừ sớm, sâu có thể phá hoại gần như toàn bộ diện tích rau chỉ trong vài ngày.
+
+Biện pháp:
+
+Canh tác: Luân canh với cây trồng khác họ (đậu, ngô…), vệ sinh đồng ruộng, thu dọn tàn dư cây bị hại, trồng thưa và thoáng để hạn chế nơi trú ngụ của sâu.
+
+Sinh học: Dùng chế phẩm sinh học chứa Bacillus thuringiensis (Bt) hoặc bảo tồn thiên địch như ong ký sinh Cotesia plutellae, bọ rùa, nhện bắt mồi.
+
+Cơ học: Dùng bẫy pheromone, bẫy đèn, hoặc che lưới chắn côn trùng ở giai đoạn cây con.
+
+Hóa học: Khi mật độ sâu cao, có thể phun luân phiên các thuốc gốc emamectin benzoate, spinosad, abamectin, indoxacarb, chlorantraniliprole (tuân thủ thời gian cách ly và không pha trộn tùy tiện).
+
+Phòng ngừa rệp: Kiểm soát sớm rệp muội bằng biện pháp sinh học hoặc hoạt chất chọn lọc như flonicamid, pymetrozine để ngăn lây lan virus xoăn lá.
+--WebAppBoundary--
+
+### Detect
+POST http://localhost:8000/api/rag/manual-detect
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="file"; filename="benhsuongmai.jpg"
+Content-Type: image/jpg
+
+< ./data/benhsuongmai.jpg
+
+--MyBoundary--

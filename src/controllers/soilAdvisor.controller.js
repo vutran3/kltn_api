@@ -1,4 +1,3 @@
-// src/controllers/soilAdvisor.controller.js
 const { z } = require("zod");
 const openai = require("../ai/openai.client");
 
