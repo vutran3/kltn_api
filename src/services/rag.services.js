@@ -1,5 +1,5 @@
 const Embedding = require("../models/embedding.model");
-const { VECTOR_INDEX, VECTOR_PATH } = process.env;
+const { VECTOR_INDEX, VECTOR_PATH, VECTOR_API } = process.env;
 
 class RagServices {
     static uploadImageToMongoDBCloud = async ({ vectorImages = [], bufferImages = [], content = "" }) => {
@@ -24,7 +24,7 @@ class RagServices {
 
     static async getRelatedData({ image }) {
         try {
-            const vectorResult = await fetch("http://127.0.0.1:8080/vectorize", {
+            const vectorResult = await fetch(VECTOR_API, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/octet-stream"

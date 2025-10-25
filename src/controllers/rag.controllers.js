@@ -10,7 +10,7 @@ class RagControllers {
             const bufferImage = req.file.buffer;
             const content = req.body?.content;
 
-            const vectorImage = await fetch("http://127.0.0.1:8080/vectorize", {
+            const vectorImage = await fetch(process.env.VECTOR_API, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/octet-stream"

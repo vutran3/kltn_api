@@ -26,6 +26,7 @@ const getUser = (contextSections) => {
         
         ### Yêu cầu:
         - Dựa trên dữ liệu trên (và ảnh nếu có), hãy trả lời **chỉ** bằng **một bảng Markdown** theo định dạng bắt buộc nêu trong system.
+        - Nếu cây không có tình trạng bị bệnh thì trả lời cây không bị bệnh
     `;
 };
 
