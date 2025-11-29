@@ -12,7 +12,12 @@ const HistorySchema = new mongoose.Schema(
 
 const ScheduleSchema = new mongoose.Schema(
     {
-        device_id: { type: String, required: true, index: true, unique: true },
+        device_id: { type: String, required: true },
+        type: {
+            type: String,
+            enum: ["pump", "light"],
+            required: true
+        },
         is_active: { type: Boolean, default: false },
         schedule_ms: { type: Date, default: null },
         duration_ms: { type: Number, default: 0 },

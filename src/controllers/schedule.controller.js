@@ -1,3 +1,4 @@
+const { SCHEDULE_TYPE } = require("../constansts");
 const Schedule = require("../models/schedule.model");
 
 const nowMs = () => Date.now();
@@ -6,6 +7,7 @@ function toResponse(dc, effectiveActive) {
     const schedule_ms = dc.schedule_ms ? dc.schedule_ms.getTime() : 0;
     return {
         device_id: dc.device_id,
+        type: dc.type,
         is_active: typeof effectiveActive === "boolean" ? effectiveActive : !!dc.is_active,
         schedule_ms,
         duration_ms: dc.duration_ms || 0,
@@ -32,60 +34,71 @@ module.exports = {
         const deviceId = (req.query.device_id || req.get("X-Device-Id") || "").trim();
         if (!deviceId) return res.status(400).json({ error: "device_id required" });
 
-        let doc = await Schedule.findOne({ device_id: deviceId });
-        if (!doc) {
-            doc = await Schedule.create({
-                device_id: deviceId,
-                is_active: false,
-                schedule_ms: null,
-                duration_ms: 0,
-                off_at: null
-            });
+        let docs = await Schedule.find({ device_id: deviceId });
+        if (docs.length === 0) {
+            docs = await Promise.all([
+                Schedule.create({
+                    device_id: deviceId,
+                    type: SCHEDULE_TYPE.LIGHT,
+                    is_active: false,
+                    schedule_ms: null,
+                    duration_ms: 0,
+                    off_at: null
+                }),
+                Schedule.create({
+                    device_id: deviceId,
+                    type: SCHEDULE_TYPE.PUMP,
+                    is_active: false,
+                    schedule_ms: null,
+                    duration_ms: 0,
+                    off_at: null
+                })
+            ]);
         }
 
-        const now = nowMs();
-        const hasSchedule = !!doc.schedule_ms;
-        const scheduleAt = hasSchedule ? doc.schedule_ms.getTime() : 0;
-        const offAtMs = doc.off_at ? doc.off_at.getTime() : 0;
+        const data = {};
+        for (let i = 0; i < docs.length; i++) {
+            const now = nowMs();
+            const hasSchedule = !!docs[i].schedule_ms;
+            const scheduleAt = hasSchedule ? docs[i].schedule_ms.getTime() : 0;
+            const offAtMs = docs[i].off_at ? docs[i].off_at.getTime() : 0;
 
-        // is_active chỉ "có hiệu lực" khi (đã đến giờ nếu có schedule) và (chưa quá hạn nếu có off_at)
-        const startedOk = !hasSchedule || now >= scheduleAt;
-        const notExpired = !offAtMs || now < offAtMs;
-        const effectiveActive = !!doc.is_active && startedOk && notExpired;
+            // is_active chỉ "có hiệu lực" khi (đã đến giờ nếu có schedule) và (chưa quá hạn nếu có off_at)
+            const startedOk = !hasSchedule || now >= scheduleAt;
+            const notExpired = !offAtMs || now < offAtMs;
+            const effectiveActive = !!docs[i].is_active && startedOk && notExpired;
 
-        // Nếu đã quá hạn mà DB vẫn bật -> dọn sạch async
-        if (doc.is_active && offAtMs && now >= offAtMs) {
-            Schedule.updateOne(
-                { device_id: deviceId },
-                { $set: { is_active: false, off_at: null, duration_ms: 0, schedule_ms: null } }
-            ).catch(() => {});
-        }
-
-        // Nếu đã đến giờ khởi động mà chưa có off_at nhưng có duration_ms>0, đảm bảo off_at được tính đúng (phòng case ghi thiếu)
-        if (doc.is_active && startedOk && !offAtMs && doc.duration_ms > 0) {
-            const newOffAt = computeOffAt(doc.schedule_ms, doc.duration_ms);
-            if (newOffAt) {
-                await Schedule.updateOne({ device_id: deviceId }, { $set: { off_at: newOffAt } }).catch(() => {});
-                doc.off_at = newOffAt;
+            // Nếu đã quá hạn mà DB vẫn bật -> dọn sạch async
+            if (docs[i].is_active && offAtMs && now >= offAtMs) {
+                Schedule.updateOne(
+                    { device_id: deviceId },
+                    { $set: { is_active: false, off_at: null, duration_ms: 0, schedule_ms: null } }
+                ).catch(() => {});
             }
+
+            // Nếu đã đến giờ khởi động mà chưa có off_at nhưng có duration_ms>0, đảm bảo off_at được tính đúng (phòng case ghi thiếu)
+            if (docs[i].is_active && startedOk && !offAtMs && docs[i].duration_ms > 0) {
+                const newOffAt = computeOffAt(docs[i].schedule_ms, docs[i].duration_ms);
+                if (newOffAt) {
+                    await Schedule.updateOne({ device_id: deviceId }, { $set: { off_at: newOffAt } }).catch(() => {});
+                    docs[i].off_at = newOffAt;
+                }
+            }
+
+            data[docs[i].type] = toResponse(docs[i], effectiveActive);
         }
 
-        res.status(200).json(toResponse(doc, effectiveActive));
+        res.status(200).json(data);
     },
 
     updateDeviceControl: async (req, res) => {
-        let { device_id, is_active, schedule_ms, duration_ms } = req.body || {};
+        let { device_id, is_active, schedule_ms, duration_ms, type } = req.body || {};
         if (!device_id) return res.status(400).json({ error: "device_id required" });
-        console.log({
-            device_id,
-            is_active,
-            schedule_ms,
-            duration_ms
-        });
+
         const scheduleMsNum = toMillisMaybe(schedule_ms);
         const durationMsNum = toMillisMaybe(duration_ms);
 
-        const doc = (await Schedule.findOne({ device_id })) || new Schedule({ device_id });
+        const doc = (await Schedule.findOne({ device_id, type })) || new Schedule({ device_id, type });
 
         const hasIsActive = typeof is_active === "boolean";
         const hasSchedule = typeof scheduleMsNum === "number";
