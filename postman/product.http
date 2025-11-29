@@ -137,3 +137,12 @@ X-Client-Id: 68f20501066c05256f6b7298
   "name": "Thiếu field sẽ lỗi",
   "status": "growing"
 }
+
+
+### Get product details
+GET {{baseUrl}}/api/products/68adb298139dd0b66d1263c2/details
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDQ0NDc3MiwiZXhwIjoxNzY0NDQ1NjcyfQ.bR1CrNUxXYH42_0o2dZYdgFUnHiBFrKx52zRymVHACg
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDQ0NDc3MiwiZXhwIjoxNzY1MDQ5NTcyfQ.EZOHR1GmM2HnciITRhItEOW8eGJnY-BRLmJ7LShsnBE
+X-Client-Id: 68f20501066c05256f6b7298
+

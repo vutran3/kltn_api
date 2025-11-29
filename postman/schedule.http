@@ -1,4 +1,4 @@
-@host = http://localhost:8000
+@host = https://kltn-api-dpqj.onrender.com
 
 ### Login
 POST {{host}}/api/auth/login
@@ -19,13 +19,13 @@ X-Client-Id: 68f20501066c05256f6b7298
 ### Tắt máy bơm
 PUT {{host}}/api/device-control
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDQzOTM2NSwiZXhwIjoxNzY0NDQwMjY1fQ.QCYi7_rGj4PUluH8rBV9iV5zWxZwxp3CJjvV21XnpNg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDQ0MjM1OCwiZXhwIjoxNzY0NDQzMjU4fQ.G8xxsIapCCwQeeRkVhhkRr2f544aao_5MKtTB7ceXII
 X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDQzNzc0OSwiZXhwIjoxNzY1MDQyNTQ5fQ.kn8YQo-IZSw94PEHwVtldDXsbF3ZYcHUJLmASnlpQJU
 X-Client-Id: 68f20501066c05256f6b7298
 
 {
   "device_id": "esp32-01",
-  "type": "pump",
+  "type": "light",
   "is_active": false
 }
 

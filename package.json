@@ -11,6 +11,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "@google/generative-ai": "^0.24.1",
         "@langchain/openai": "^1.0.0",
         "ai": "2.2.14",
         "axios": "^1.11.0",
