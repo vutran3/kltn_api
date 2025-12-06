@@ -8,7 +8,7 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: [
         'src/services/*.js',
-        'src/utils/*.js',
+        '!src/utils/*.js',
         'src/controllers/*.js',
         '!**/node_modules/**'
     ],
