@@ -6,6 +6,7 @@ module.exports = {
     collectReadingData: async (req, res, next) => {
         try {
             const b = req.body || {};
+            console.log(b);
             const deviceId = req.headers["x-device-id"];
             if (!deviceId) throw createError.BadRequest("Mã thiết bị không hợp lệ");
 
