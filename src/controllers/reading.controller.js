@@ -6,7 +6,6 @@ module.exports = {
     collectReadingData: async (req, res, next) => {
         try {
             const b = req.body || {};
-            console.log(b);
             const deviceId = req.headers["x-device-id"];
             if (!deviceId) throw createError.BadRequest("Mã thiết bị không hợp lệ");
 
@@ -15,7 +14,7 @@ module.exports = {
             const ts = new Date(tsMs);
 
             const reading = buildReadingFromBody(b, ts);
-            console.log(reading);
+
             const saved = await readingService.addReadingToBucket(deviceId, reading);
 
             return res.status(201).json({

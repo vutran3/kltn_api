@@ -66,8 +66,6 @@ class ProductHistoryService {
                 if (allowedUpdates.includes(key)) cleanUpdates[key] = updates[key];
             });
 
-            console.log(cleanUpdates);
-
             const updatedHistory = await ProductHistory.findByIdAndUpdate(toOid(historyId), cleanUpdates, {
                 new: true
             });

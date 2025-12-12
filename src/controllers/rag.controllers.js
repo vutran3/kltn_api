@@ -46,10 +46,7 @@ class RagControllers {
 
             const relatedData = await RagServices.getRelatedData({ image }).catch(() => []);
             const context = Array.isArray(relatedData) && relatedData.length > 0 ? relatedData[0]?.content || "" : "—";
-            console.log({
-                user: getUser(context),
-                system: getSystem()
-            });
+
             const advice = await runGeminiChat({
                 userData: getUser(context),
                 systemData: getSystem(),
