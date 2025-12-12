@@ -40,7 +40,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
     connectMongoDB();
     console.log("Server is listening on port", PORT);
 });
