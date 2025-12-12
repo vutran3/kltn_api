@@ -74,7 +74,7 @@ module.exports = {
             if (docs[i].is_active && offAtMs && now >= offAtMs) {
                 console.log("ok");
                 await Schedule.updateOne(
-                    { device_id: deviceId },
+                    { device_id: deviceId, type: docs[i].type },
                     { $set: { is_active: false, off_at: null, duration_ms: 0, schedule_ms: null } }
                 ).catch(() => {});
             }
