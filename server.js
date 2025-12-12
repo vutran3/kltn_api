@@ -4,6 +4,7 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const cron = require("node-cron");
 const morgan = require("morgan");
 const routes = require("./src/routes");
 const { PORT } = require("./src/config");
@@ -15,6 +16,7 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { initSocket } = require("./src/socket");
+const deviceMonitorService = require("./src/services/device.monitor.service");
 const io = initSocket(server);
 
 const uploadDir = path.join(__dirname, "uploads");
@@ -40,7 +42,11 @@ app.use((err, req, res, next) => {
     });
 });
 
-server.listen(PORT, async () => {
+server.listen(PORT, () => {
     connectMongoDB();
+    cron.schedule("0 * * * *", async () => {
+        console.log("Running Offline Check...");
+        await deviceMonitorService.checkOfflineDevices();
+    });
     console.log("Server is listening on port", PORT);
 });

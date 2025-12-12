@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS || 10);
 
-const [COL, DOC] = ["users", "USER"];
+const [COL, DOC] = ["users", "User"];
 const UserSchema = new mongoose.Schema(
     {
         name: { type: String, trim: true, required: true },

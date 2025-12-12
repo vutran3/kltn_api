@@ -1,3 +1,4 @@
+const deviceMonitorService = require("../services/device.monitor.service");
 const readingService = require("../services/reading.service");
 const { buildReadingFromBody, parseDateMaybe } = require("../utils");
 const createError = require("http-errors");
@@ -7,14 +8,15 @@ module.exports = {
         try {
             const b = req.body || {};
             const deviceId = req.headers["x-device-id"];
+
             if (!deviceId) throw createError.BadRequest("Mã thiết bị không hợp lệ");
+            deviceMonitorService.handleHeartbeat(deviceId).catch((err) => console.error("Monitor Error:", err));
 
             const nowMs = Date.now();
             const tsMs = typeof b.ts === "number" ? b.ts : nowMs;
             const ts = new Date(tsMs);
 
             const reading = buildReadingFromBody(b, ts);
-
             const saved = await readingService.addReadingToBucket(deviceId, reading);
 
             return res.status(201).json({

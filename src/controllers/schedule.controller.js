@@ -69,10 +69,7 @@ module.exports = {
             const effectiveActive = !!docs[i].is_active && startedOk && notExpired;
 
             // Nếu đã quá hạn mà DB vẫn bật -> dọn sạch async
-            console.log({ now, offAtMs });
-
             if (docs[i].is_active && offAtMs && now >= offAtMs) {
-                console.log("ok");
                 await Schedule.updateOne(
                     { device_id: deviceId, type: docs[i].type },
                     { $set: { is_active: false, off_at: null, duration_ms: 0, schedule_ms: null } }
@@ -96,7 +93,6 @@ module.exports = {
 
     updateDeviceControl: async (req, res) => {
         let { device_id, is_active, schedule_ms, duration_ms, type } = req.body || {};
-        console.log({ device_id, is_active, schedule_ms, duration_ms, type });
         if (!device_id) return res.status(400).json({ error: "device_id required" });
 
         const scheduleMsNum = toMillisMaybe(schedule_ms);
