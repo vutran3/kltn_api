@@ -6,6 +6,7 @@ module.exports = {
     collectReadingData: async (req, res, next) => {
         try {
             const b = req.body || {};
+            console.log(b);
             const deviceId = req.headers["x-device-id"];
             if (!deviceId) throw createError.BadRequest("Mã thiết bị không hợp lệ");
 
@@ -14,6 +15,7 @@ module.exports = {
             const ts = new Date(tsMs);
 
             const reading = buildReadingFromBody(b, ts);
+            console.log(reading);
             const saved = await readingService.addReadingToBucket(deviceId, reading);
 
             return res.status(201).json({
@@ -31,9 +33,7 @@ module.exports = {
     getReadingData: async (req, res, next) => {
         try {
             const deviceId = req.query.deviceId;
-            if (!deviceId) {
-                return res.status(400).json({ error: "deviceId query is required" });
-            }
+            if (!deviceId) return res.status(400).json({ error: "deviceId query is required" });
 
             const from = parseDateMaybe(req.query.from);
             const to = parseDateMaybe(req.query.to);
@@ -48,8 +48,6 @@ module.exports = {
                 limit,
                 sort
             });
-
-            console.log(rows[0]);
 
             res.status(200).json({
                 status: 200,

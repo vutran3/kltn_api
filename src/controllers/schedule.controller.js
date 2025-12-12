@@ -69,7 +69,7 @@ module.exports = {
             const effectiveActive = !!docs[i].is_active && startedOk && notExpired;
 
             // Nếu đã quá hạn mà DB vẫn bật -> dọn sạch async
-            if (docs[i].is_active && offAtMs && now >= offAtMs) {
+            if ((docs[i].is_active && offAtMs && now >= offAtMs) || docs[i].off_at < now) {
                 Schedule.updateOne(
                     { device_id: deviceId },
                     { $set: { is_active: false, off_at: null, duration_ms: 0, schedule_ms: null } }

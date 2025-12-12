@@ -18,7 +18,7 @@ const productSchema = new Schema(
             type: String,
             enum: ["growing", "harvesting", "selling"]
         },
-        images: [String]
+        image: String
     },
     { collection: COLLECTION_NAME }
 );

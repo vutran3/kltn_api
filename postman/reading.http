@@ -9,6 +9,26 @@ Content-Type: application/json
   "password": "P@ssw0rd!"
 }
 
+### Collect reading data
+POST {{host}}/api/readings
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NTA1MjMxNiwiZXhwIjoxNzY1MDUzMjE2fQ.isvfkXy5n7Ldk_X9HN5kcJmG3XbVL8fXyB4TmEAoixQ
+X-Refresh: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGYyMDUwMTA2NmMwNTI1NmY2YjcyOTgiLCJlbWFpbCI6InRyYW5kdWN2dTIzNEBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NTA1MjMxNiwiZXhwIjoxNzY1NjU3MTE2fQ.QGdWBkUr2ZY1T2Qu0GrYZgAKj-5kc8VZnQGhyHA6HKY
+X-Client-Id: 68f20501066c05256f6b7298
+X-Device-Id: esp32-01
+
+{
+  "air_temperature": 30.4,
+  "air_humidity": 76,
+  "light_raw": 180,
+  "soil_temperature": 28.6,
+  "soil_humidity": 56.1,
+  "nitrogen": 117,
+  "phosphorus": 318,
+  "potassium": 312,
+  "ph": 6.4 
+}
+
 ### Get reading data
 GET http://192.168.0.100:8000/api/readings?deviceId=esp32-01&limit=100&sort=-1
 Content-Type: application/json

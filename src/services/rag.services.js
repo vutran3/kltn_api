@@ -23,7 +23,6 @@ class RagServices {
     };
 
     static async getRelatedData({ image }) {
-        console.log(VECTOR_API);
         try {
             const vectorResult = await fetch(VECTOR_API, {
                 method: "POST",
@@ -60,7 +59,6 @@ class RagServices {
 
             return result;
         } catch (error) {
-            console.log(error);
             throw error;
         }
     }

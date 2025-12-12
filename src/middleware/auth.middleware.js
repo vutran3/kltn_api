@@ -7,10 +7,6 @@ const auth = async (req, res, next) => {
     try {
         const token = req.headers["authorization"];
         const userId = req.headers["x-client-id"];
-        console.log({
-            token,
-            userId
-        });
 
         if (!token) throw createError.Unauthorized("Vui lòng đăng nhập");
         if (!userId) throw createError.BadRequest("Người dùng không hợp lệ");
