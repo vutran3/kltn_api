@@ -11,7 +11,7 @@ const productHistorySchema = new Schema(
             required: true,
             default: "other"
         },
-        process_date: { type: Date, default: Date.now },
+        process_date: { type: Date, default: Date.now() },
         notes: { type: String, default: "" },
         image: { type: String, default: "" }
     },

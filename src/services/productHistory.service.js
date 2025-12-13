@@ -21,8 +21,14 @@ class ProductHistoryService {
             throw error;
         }
     }
-
-    static async getListHistory({ page = 1, limit = 10, device_id, sort = "ctime" }) {
+    static async getListHistory({
+        page = 1,
+        limit = 10,
+        device_id,
+        process_date_start,
+        process_date_end,
+        sort = "ctime"
+    }) {
         try {
             const pageNum = Math.max(1, Number(page) || 1);
             const limitNum = Math.max(1, Number(limit) || 10);
@@ -31,6 +37,19 @@ class ProductHistoryService {
             const filter = {};
             if (device_id) filter.device_id = device_id;
 
+            // --- THÊM LOGIC LỌC NGÀY ---
+            if (process_date_start || process_date_end) {
+                filter.process_date = {};
+                if (process_date_start) {
+                    filter.process_date.$gte = new Date(process_date_start);
+                }
+                if (process_date_end) {
+                    filter.process_date.$lte = new Date(process_date_end);
+                }
+            }
+            // ---------------------------
+
+            // Logic sort vẫn giữ nguyên: nếu không truyền sort thì mặc định là ctime (mới nhất trước)
             const sortMap = { ctime: { process_date: -1 }, old: { process_date: 1 } };
             const sortBy = sortMap[sort] || sortMap["ctime"];
 

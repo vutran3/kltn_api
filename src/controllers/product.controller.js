@@ -11,6 +11,7 @@ const { uploadBufferToCloudinary } = require("../config/cloudinary.config");
 const Rag = require("../models/rag.model");
 const { runGeminiChat } = require("../ai/gemini.client");
 const { getUserContentForProductDetails, getSystemPromptForProductDetails } = require("../ai/context");
+const ProductHistory = require("../models/productHistory.model");
 
 const getDateRange = (product) => {
     const now = new Date();
@@ -173,7 +174,6 @@ module.exports = {
         }
     },
 
-    // API 2: Lấy dữ liệu cảm biến (Nặng tính toán)
     getProductReadings: async (req, res) => {
         try {
             const { productId } = req.params;
@@ -221,7 +221,6 @@ module.exports = {
         }
     },
 
-    // API 3: Lấy lịch sử bệnh & kiểm tra (Database query)
     getProductLogs: async (req, res) => {
         try {
             const { productId } = req.params;
@@ -251,7 +250,6 @@ module.exports = {
         }
     },
 
-    // API 4: AI Analysis (Slowest)
     getProductAI: async (req, res) => {
         try {
             const { productId } = req.params;
@@ -293,6 +291,39 @@ module.exports = {
             console.error(err);
             // AI lỗi thì trả về chuỗi rỗng hoặc báo lỗi nhẹ, không làm sập trang
             return res.json({ ai_quality_description: "Không thể phân tích dữ liệu lúc này." });
+        }
+    },
+
+    getProductCareLogs: async (req, res) => {
+        try {
+            const { productId } = req.params;
+
+            // 1. Lấy thông tin cây để xác định khung thời gian
+            const product = await Product.findById(productId).select("planting_date actual_harvest_date field").lean();
+            if (!product) return res.status(404).json({ message: "Product not found" });
+
+            const { from, to } = getDateRange(product);
+
+            // 2. Lấy danh sách thiết bị trong ruộng
+            const field = await Field.findById(product.field).populate("devices");
+            const deviceIdList = field.devices.map((device) => device.device_id);
+
+            console.log(deviceIdList);
+
+            // 3. Query lịch sử chăm sóc
+            const careLogs = await ProductHistory.find({
+                device_id: { $in: deviceIdList },
+                process_date: { $gte: from, $lte: to }
+            })
+                .sort({ process_date: -1 })
+                .lean();
+
+            return res.json({
+                care_history: careLogs
+            });
+        } catch (err) {
+            console.error("getProductCareLogs error:", err);
+            return res.status(500).json({ message: err.message });
         }
     }
 };

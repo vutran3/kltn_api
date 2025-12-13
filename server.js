@@ -44,7 +44,7 @@ app.use((err, req, res, next) => {
 
 server.listen(PORT, () => {
     connectMongoDB();
-    cron.schedule("0 * * * *", async () => {
+    cron.schedule("* * * * *", async () => {
         console.log("Running Offline Check...");
         await deviceMonitorService.checkOfflineDevices();
     });

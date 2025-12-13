@@ -54,7 +54,19 @@ module.exports = {
         await redis.hset(deviceKey, "last_seen", now, "status", "online");
         await redis.sadd("active_devices", deviceId);
 
-        if (lastStatus === "offline") await sendAlertEmail(deviceId, "ONLINE");
+        if (lastStatus === "offline") {
+            await Promise.all([
+                sendAlertEmail(deviceId, "ONLINE"),
+                Device.findOneAndUpdate(
+                    {
+                        device_id: deviceId
+                    },
+                    {
+                        is_active: true
+                    }
+                )
+            ]);
+        }
     },
 
     checkOfflineDevices: async () => {
@@ -70,8 +82,19 @@ module.exports = {
                 const diff = now - parseInt(lastSeen);
 
                 if (diff > THRESHOLD_OFFLINE_MS && currentStatus !== "offline") {
-                    await redis.hset(deviceKey, "status", "offline");
-                    await sendAlertEmail(deviceId, "OFFLINE");
+                    await Promise.all([
+                        redis.hset(deviceKey, "status", "offline"),
+                        redis.hset(deviceKey, "status", "offline"),
+                        sendAlertEmail(deviceId, "OFFLINE"),
+                        Device.findOneAndUpdate(
+                            {
+                                device_id: deviceId
+                            },
+                            {
+                                is_active: false
+                            }
+                        )
+                    ]);
                 }
             }
         }
