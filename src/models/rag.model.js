@@ -7,8 +7,13 @@ const RagSchema = new Schema(
         device_id: String,
         detect_date: Date,
         description: String,
+        expert_feedback: String,
         image: Buffer,
-        relative_image: Buffer
+        relative_image: Buffer,
+        isSend: {
+            type: Boolean,
+            default: false
+        }
     },
     { collection: COL, timestamps: true }
 );

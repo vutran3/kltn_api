@@ -11,14 +11,36 @@ const { PORT } = require("./src/config");
 const connectMongoDB = require("./src/databases/mongodb.database");
 const app = express();
 
-// ===== Tạo http server & socket.io =====
-
 const http = require("http");
 const server = http.createServer(app);
+
 const { initSocket } = require("./src/socket");
 const deviceMonitorService = require("./src/services/device.monitor.service");
-const io = initSocket(server);
+initSocket(server);
 
+const WebSocket = require("ws");
+const wss = new WebSocket.Server({
+    server: server,
+    path: "/ws/camera-stream"
+});
+
+wss.on("connection", function connection(ws) {
+    console.log("[WS] Client connected to Camera Stream");
+
+    ws.on("message", function incoming(data, isBinary) {
+        wss.clients.forEach(function each(client) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(data, { binary: isBinary });
+            }
+        });
+    });
+
+    ws.on("close", () => {
+        console.log("[WS] Client disconnected");
+    });
+});
+
+// ===== Cấu hình Express Middleware =====
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -42,11 +64,14 @@ app.use((err, req, res, next) => {
     });
 });
 
+// ===== Khởi chạy Server =====
 server.listen(PORT, () => {
     connectMongoDB();
-    cron.schedule("* * * * *", async () => {
+    cron.schedule("0 * * * *", async () => {
         console.log("Running Offline Check...");
         await deviceMonitorService.checkOfflineDevices();
     });
     console.log("Server is listening on port", PORT);
+    console.log(`- Socket.IO path: /socket.io/`);
+    console.log(`- WebSocket Stream path: /ws/camera-stream`);
 });

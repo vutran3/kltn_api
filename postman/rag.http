@@ -1,5 +1,7 @@
+@url = http://localhost:8000
+
 ### Upload image
-POST http://localhost:8000/api/rag/image
+POST {{url}}/api/rag/image
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -34,7 +36,7 @@ Phòng ngừa rệp: Kiểm soát sớm rệp muội bằng biện pháp sinh h�
 --WebAppBoundary--
 
 ### Detect
-POST http://localhost:8000/api/rag/manual-detect
+POST {{url}}/api/rag/manual-detect
 Content-Type: multipart/form-data; boundary=MyBoundary
 
 --MyBoundary
@@ -44,3 +46,6 @@ Content-Type: image/jpg
 < ./data/benhsuongmai.jpg
 
 --MyBoundary--
+
+### Get history
+GET {{url}}/api/rag/history?device_id=esp32-01

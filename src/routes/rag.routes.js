@@ -1,9 +1,14 @@
 const router = require("express").Router();
 const upload = require("../config/multer.config");
 const ragControllers = require("../controllers/rag.controllers");
+const auth = require("../middleware/auth.middleware");
 
-router.post("/manual-detect", upload.single("file"), ragControllers.sendQuestion);
+router.get("/history", auth, ragControllers.getDeviceHistory);
+router.post("/request-expert", auth, ragControllers.requestExpertHelp);
+router.post("/manual-detect", auth, upload.single("file"), ragControllers.sendQuestion);
+router.post("/image", auth, upload.single("file"), ragControllers.uploadSingleImage);
 
-router.post("/image", upload.single("file"), ragControllers.uploadSingleImage);
+router.delete("/history/:id", auth, ragControllers.deleteHistoryItem);
+router.delete("/history", auth, ragControllers.clearDeviceHistory);
 
 module.exports = router;

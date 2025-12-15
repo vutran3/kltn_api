@@ -127,12 +127,53 @@ function safeFmt(v, unit = "") {
     return `${Number(v).toFixed(v % 1 ? 2 : 0)}${unit}`;
 }
 
+const convertMarkdownToHtmlTable = (markdownText) => {
+    if (!markdownText) return "<p>Không có dữ liệu chẩn đoán.</p>";
+
+    const lines = markdownText.split("\n").filter((line) => line.trim() !== "");
+    let html =
+        '<table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-family: Arial, sans-serif;">';
+
+    lines.forEach((line, index) => {
+        const trimmedLine = line.trim();
+
+        if (trimmedLine.includes("---")) return;
+        if (!trimmedLine.startsWith("|")) {
+            html += `<tr><td colspan="100%" style="padding: 8px;">${trimmedLine}</td></tr>`;
+            return;
+        }
+
+        const cells = trimmedLine.replace(/^\||\|$/g, "").split("|");
+
+        html += "<tr>";
+
+        const isHeader = index === 0;
+        const tag = isHeader ? "th" : "td";
+
+        const bgStyle = isHeader ? "background-color: #f4f6f8; color: #1f2937; font-weight: bold;" : "color: #374151;";
+        const cellStyle = `border: 1px solid #e5e7eb; padding: 12px; text-align: left; line-height: 1.5; ${bgStyle}`;
+
+        cells.forEach((cell) => {
+            let content = cell.trim().replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+            if (!content) content = "—";
+
+            html += `<${tag} style="${cellStyle}">${content}</${tag}>`;
+        });
+
+        html += "</tr>";
+    });
+
+    html += "</table>";
+    return html;
+};
+
 module.exports = {
     safeFmt,
     safeUser,
+    parseDate,
+    parseDateMaybe,
+    convertToObjectId,
     toNumberOrUndefined,
     buildReadingFromBody,
-    parseDateMaybe,
-    parseDate,
-    convertToObjectId
+    convertMarkdownToHtmlTable
 };

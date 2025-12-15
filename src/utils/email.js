@@ -1,4 +1,17 @@
-export const getEmailTemplate = (deviceId, status, time) => {
+const nodemailer = require("nodemailer");
+const createHttpError = require("http-errors");
+const { convertMarkdownToHtmlTable } = require(".");
+const { EXPERT_EMAIL, EMAIL_NAME, EMAIL_APP_PASS } = process.env;
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: EMAIL_NAME,
+        pass: EMAIL_APP_PASS
+    }
+});
+
+const getEmailTemplate = (deviceId, status, time) => {
     const isOnline = status === "ONLINE";
     const color = isOnline ? "#2ecc71" : "#e74c3c";
     const title = isOnline ? "Thiết bị Đã Kết Nối Lại" : "Cảnh Báo Mất Kết Nối";
@@ -44,4 +57,96 @@ export const getEmailTemplate = (deviceId, status, time) => {
         </div>
     </div>
     `;
+};
+
+const sendAlertEmail = async (deviceId, status) => {
+    const timeString = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+    const subject = `[IoT Alert] Thiết bị ${deviceId} đang ${status}`;
+
+    try {
+        const device = await Device.findOne({ device_id: deviceId }).populate("owner");
+        const owner = device.owner;
+
+        if (!owner.email) throw createHttpError.BadRequest("Người dùng không có email");
+        const htmlContent = getEmailTemplate(deviceId, status, timeString);
+
+        await transporter.sendMail({
+            from: "IoT System",
+            to: owner.email,
+            subject: subject,
+            html: htmlContent
+        });
+        console.log(`Đã gửi mail cảnh báo ${status} cho ${deviceId}`);
+    } catch (err) {
+        console.error("Lỗi gửi mail:", err);
+    }
+};
+
+const getExpertEmailTemplate = (deviceId, detectDate, advice) => {
+    return `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #2563eb;">Yêu cầu xác nhận từ chuyên gia</h2>
+        <p>Hệ thống IoT nhận được kết quả chẩn đoán từ AI và cần chuyên gia xác nhận.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Thiết bị:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${deviceId}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Thời gian:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${new Date(detectDate).toLocaleString(
+                    "vi-VN"
+                )}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>AI Chẩn đoán:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd; white-space: pre-wrap;">${convertMarkdownToHtmlTable(
+                    advice
+                )}</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 20px;">
+            <em>Vui lòng xem ảnh đính kèm và cập nhật phản hồi vào hệ thống.</em>
+        </p>
+    </div>
+    `;
+};
+
+const sendExpertReviewEmail = async ({ deviceId, detectDate, advice, imageBuffer, ragId }) => {
+    try {
+        if (!EXPERT_EMAIL) {
+            console.error("Chưa cấu hình EXPERT_EMAIL trong .env");
+            return;
+        }
+
+        const htmlContent = getExpertEmailTemplate(deviceId, detectDate, advice);
+
+        await transporter.sendMail({
+            from: '"IoT AI System" <no-reply@iot-system.com>',
+            to: EXPERT_EMAIL,
+            subject: `[Expert Review] Yêu cầu kiểm tra kết quả AI - ${deviceId}`,
+            html: htmlContent,
+            attachments: imageBuffer
+                ? [
+                      {
+                          filename: `detect-${ragId}.jpg`,
+                          content: imageBuffer
+                      }
+                  ]
+                : []
+        });
+
+        console.log(`Đã gửi mail cho chuyên gia về Rag ID: ${ragId}`);
+        return true;
+    } catch (err) {
+        console.error("Lỗi gửi mail chuyên gia:", err);
+        return false;
+    }
+};
+
+module.exports = {
+    sendAlertEmail,
+    sendExpertReviewEmail
 };
