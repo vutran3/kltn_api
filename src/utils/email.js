@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const createHttpError = require("http-errors");
 const { convertMarkdownToHtmlTable } = require(".");
-const { EXPERT_EMAIL, EMAIL_NAME, EMAIL_APP_PASS } = process.env;
+const { EXPERT_EMAIL, EMAIL_NAME, EMAIL_APP_PASS, FRONTEND_URL } = process.env;
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -82,71 +82,127 @@ const sendAlertEmail = async (deviceId, status) => {
     }
 };
 
-const getExpertEmailTemplate = (deviceId, detectDate, advice) => {
-    return `
-    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-        <h2 style="color: #2563eb;">Yêu cầu xác nhận từ chuyên gia</h2>
-        <p>Hệ thống IoT nhận được kết quả chẩn đoán từ AI và cần chuyên gia xác nhận.</p>
-        
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Thiết bị:</strong></td>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${deviceId}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Thời gian:</strong></td>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${new Date(detectDate).toLocaleString(
-                    "vi-VN"
-                )}</td>
-            </tr>
-            <tr>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>AI Chẩn đoán:</strong></td>
-                <td style="padding: 8px; border-bottom: 1px solid #ddd; white-space: pre-wrap;">${convertMarkdownToHtmlTable(
-                    advice
-                )}</td>
-            </tr>
-        </table>
+const getExpertEmailTemplate = (deviceId, detectDate, advice, ragId) => {
+    const reviewLink = `${process.env.FRONTEND_URL}/expert/review/${ragId}`;
 
-        <p style="margin-top: 20px;">
-            <em>Vui lòng xem ảnh đính kèm và cập nhật phản hồi vào hệ thống.</em>
-        </p>
+    return `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 800px; margin: 0 auto;">
+        <h2 style="color: #2563eb; text-align: center;">Yêu cầu xác nhận từ chuyên gia</h2>
+        <p style="text-align: center; color: #555;">Hệ thống IoT nhận được kết quả chẩn đoán từ AI và cần chuyên gia xác nhận.</p>
+        
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Thiết bị:</strong> ${deviceId}</p>
+            <p><strong>Thời gian:</strong> ${new Date(detectDate).toLocaleString("vi-VN")}</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">AI Chẩn đoán sơ bộ:</h3>
+            ${convertMarkdownToHtmlTable(advice)}
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="margin-bottom: 15px;">Vui lòng truy cập hệ thống để xem ảnh gốc và đưa ra kết luận:</p>
+            <a href="${reviewLink}" 
+               style="background-color: #2563eb; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">
+               Truy cập trang đánh giá
+            </a>
+        </div>
     </div>
     `;
 };
 
 const sendExpertReviewEmail = async ({ deviceId, detectDate, advice, imageBuffer, ragId }) => {
     try {
-        if (!EXPERT_EMAIL) {
-            console.error("Chưa cấu hình EXPERT_EMAIL trong .env");
-            return;
-        }
-
-        const htmlContent = getExpertEmailTemplate(deviceId, detectDate, advice);
+        if (!EXPERT_EMAIL) throw createHttpError.BadRequest("Chưa có chuyên gia để tư vấn");
+        const htmlContent = getExpertEmailTemplate(deviceId, detectDate, advice, ragId);
 
         await transporter.sendMail({
             from: '"IoT AI System" <no-reply@iot-system.com>',
             to: EXPERT_EMAIL,
             subject: `[Expert Review] Yêu cầu kiểm tra kết quả AI - ${deviceId}`,
             html: htmlContent,
-            attachments: imageBuffer
-                ? [
-                      {
-                          filename: `detect-${ragId}.jpg`,
-                          content: imageBuffer
-                      }
-                  ]
-                : []
+            attachments: imageBuffer ? [{ filename: `detect-${ragId}.jpg`, content: imageBuffer }] : []
         });
 
-        console.log(`Đã gửi mail cho chuyên gia về Rag ID: ${ragId}`);
         return true;
     } catch (err) {
-        console.error("Lỗi gửi mail chuyên gia:", err);
-        return false;
+        throw createHttpError.BadRequest("Lỗi gửi mail chuyên gia");
     }
 };
 
+const getAdviceEmailTemplate = (deviceId, adviceHtml) => {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body { font-family: 'Helvetica', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9fafb; margin: 0; padding: 0; }
+            .container { max-width: 800px; margin: 20px auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+            .header { background: #10b981; color: #fff; padding: 20px; text-align: center; }
+            .content { padding: 30px; }
+            .footer { background: #f3f4f6; padding: 15px; text-align: center; font-size: 12px; color: #666; }
+            
+            /* Style cho HTML từ AI trả về */
+            .section { margin-bottom: 24px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 16px; }
+            .section h3 { color: #059669; font-size: 18px; margin-top: 0; border-left: 4px solid #059669; padding-left: 10px; }
+            table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+            th { background: #f0fdf4; color: #166534; padding: 8px; border: 1px solid #dcfce7; }
+            td { padding: 8px; border: 1px solid #e5e7eb; }
+            ul { padding-left: 20px; }
+            li { margin-bottom: 6px; }
+            .btn { display: inline-block; background: #333; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 5px; margin-top: 20px; font-weight: bold; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 style="margin:0; font-size: 24px;">🌱 Kế Hoạch Cải Thiện Môi Trường</h1>
+                <p style="margin:5px 0 0;">Thiết bị: ${deviceId}</p>
+            </div>
+            <div class="content">
+                <p>Hệ thống AI đã phân tích dữ liệu cảm biến và đề xuất lộ trình xử lý sau:</p>
+                
+                ${adviceHtml}
+
+                <div style="text-align: center;">
+                    <a href="${FRONTEND_URL}" class="btn">Theo dõi tiến độ trên App</a>
+                </div>
+            </div>
+            <div class="footer">
+                <p>© 2025 Smart Agriculture System - AI Advisor</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+};
+
+const sendAdviceEmail = async (userEmail, deviceId, adviceHtml) => {
+    try {
+        console.log({
+            userEmail,
+            deviceId,
+            adviceHtml
+        });
+        if (!userEmail) throw new Error("User email is required");
+
+        const htmlContent = getAdviceEmailTemplate(deviceId, adviceHtml);
+
+        await transporter.sendMail({
+            from: '"Smart Agri AI" <no-reply@agri-system.com>',
+            to: userEmail,
+            subject: `[Kế hoạch 7-14 ngày] Đề xuất xử lý cho thiết bị ${deviceId}`,
+            html: htmlContent
+        });
+
+        return true;
+    } catch (err) {
+        console.log(err);
+        throw createHttpError.InternalServerError("Không thể gửi email kế hoạch");
+    }
+};
 module.exports = {
     sendAlertEmail,
-    sendExpertReviewEmail
+    sendExpertReviewEmail,
+    sendAdviceEmail
 };

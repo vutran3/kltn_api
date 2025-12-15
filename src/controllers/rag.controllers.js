@@ -54,7 +54,7 @@ class RagControllers {
                 systemData: getSystem(),
                 imageBuffers: [image],
                 fallbackText: `
-                | Tên bệnh | Triệu chứng điển hình | Nguyên nhân gây bệnh | Điều kiện phát sinh | Biện pháp phòng trị (Sinh học / Hóa học / Canh tác) | Ghi chú bổ sung |
+                | Tên bệnh | Triệu chứng điển hình | Nguyên nhân gây bệnh | Điều kiện phát sinh | Biện pháp phòng trị | Ghi chú bổ sung |
                 |---|---|---|---|---|---|
                 | Chưa đủ dữ liệu | Chưa đủ dữ liệu | — | — | — | Vui lòng cung cấp ảnh lá gần, ảnh mặt dưới lá, thông tin thời tiết gần đây và độ ẩm đất. |
                 `
@@ -164,6 +164,40 @@ class RagControllers {
             await ragRecord.save();
 
             return res.status(200).json({ message: "Đã gửi yêu cầu đến chuyên gia thành công!" });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getRagDetail(req, res, next) {
+        try {
+            const { id } = req.params;
+            const rag = await Rag.findById(id);
+            if (!rag) throw createHttpError.NotFound("Không tìm thấy dữ liệu.");
+
+            return res.status(200).json({ data: rag });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async submitExpertFeedback(req, res, next) {
+        try {
+            const { id } = req.params;
+            const { feedback } = req.body;
+
+            if (!feedback || feedback.trim() === "") {
+                throw createHttpError.BadRequest("Nội dung đánh giá không được để trống.");
+            }
+
+            const updatedRag = await Rag.findByIdAndUpdate(id, { expert_feedback: feedback }, { new: true });
+
+            if (!updatedRag) throw createHttpError.NotFound("Không tìm thấy bản ghi.");
+
+            return res.status(200).json({
+                message: "Đã lưu đánh giá thành công!",
+                data: updatedRag
+            });
         } catch (error) {
             next(error);
         }

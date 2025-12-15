@@ -1,6 +1,8 @@
 const { z } = require("zod");
 const { runGeminiChat } = require("../ai/gemini.client");
 const { buildPrompt } = require("../ai/context");
+const { sendAdviceEmail } = require("../utils/email");
+const createHttpError = require("http-errors");
 
 const Schema = z.object({
     deviceId: z.string(),
@@ -31,16 +33,22 @@ module.exports = {
     advise: async (req, res) => {
         try {
             const parsed = Schema.safeParse(req.body);
-            if (!parsed.success) {
-                return res.status(400).json({ message: "Invalid payload", issues: parsed.error.issues });
-            }
+            if (!parsed.success) throw createHttpError.BadRequest("Dữ liệu không hợp lệ");
+
+            const userData = res.locals.user;
+
+            if (!userData) throw createHttpError.BadRequest("Người dùng không tồn tại");
+
             const payload = parsed.data;
+            console.log(payload);
             const { system, user } = buildPrompt(payload);
 
             const advice = await runGeminiChat({
                 userData: user,
                 systemData: system
             });
+
+            await sendAdviceEmail(userData.email, payload.deviceId, advice);
             return res.json({ data: { advice } });
         } catch (e) {
             console.error("AI advise error:", e);

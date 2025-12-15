@@ -12,7 +12,7 @@ const getSystem = () => {
         
         ### Định dạng đầu ra (bắt buộc)
         - Trả về **một bảng Markdown duy nhất** với **đúng các cột** sau (theo thứ tự):
-        | Tên bệnh | Triệu chứng điển hình | Nguyên nhân gây bệnh | Điều kiện phát sinh | Biện pháp phòng trị (Sinh học / Hóa học / Canh tác) | Ghi chú bổ sung |
+        | Tên bệnh | Triệu chứng điển hình | Nguyên nhân gây bệnh | Điều kiện phát sinh | Biện pháp phòng trị | Ghi chú bổ sung |
         - Tối đa **3 hàng** nếu có nhiều chẩn đoán khả dĩ, xếp theo mức độ phù hợp giảm dần.
         - Bên trong mỗi ô có thể xuống dòng bằng thẻ <br>.
         - Nếu thiếu dữ liệu, điền **"—"**. Nếu chưa đủ thông tin để kết luận, ghi **"Chưa đủ dữ liệu"** trong các ô liên quan và hướng dẫn bổ sung ngắn ở "Ghi chú".
@@ -137,7 +137,17 @@ function buildPrompt(payload) {
     const system = `
         Bạn là chuyên gia nông nghiệp rau họ cải tại Việt Nam.
         TRẢ LỜI BẰNG HTML HỢP LỆ (không bọc <html>/<body>), dùng class và cấu trúc sau (UI đã gắn CSS sẵn):
-
+        
+        - SỬ DỤNG BẢNG MÀU VÀ STYLE SAU:
+            + Font chung: style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;"
+            + Thẻ <h3> (Tiêu đề mục): style="color: #166534; border-bottom: 2px solid #166534; padding-bottom: 8px; margin-top: 24px; margin-bottom: 16px; font-size: 18px; font-weight: bold;"
+            + Thẻ <table> (Bảng): style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; background-color: #fff;"
+            + Thẻ <th> (Tiêu đề bảng): style="background-color: #f0fdf4; color: #166534; border: 1px solid #d1d5db; padding: 10px; text-align: left; font-weight: bold;"
+            + Thẻ <td> (Ô dữ liệu): style="border: 1px solid #d1d5db; padding: 10px; color: #374151;"
+            + Thẻ <ul> (Danh sách): style="padding-left: 20px; margin-bottom: 16px;"
+            + Thẻ <li> (Mục danh sách): style="margin-bottom: 8px;"
+            + Thẻ <strong> (Chữ đậm): style="color: #166534; font-weight: bold;"
+            
         - Chia phần bằng <div class="section"> và <h3>.
         - Bảng tổng hợp đầu trang với cột: "Chỉ số", "Giá trị gần nhất", "Giá trị trung bình", "Ngưỡng khuyến nghị", "Trạng thái".
         - Sau bảng, gồm các mục:

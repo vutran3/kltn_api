@@ -9,7 +9,7 @@ router.use("/fields", require("./fields.routes"));
 router.use("/notification", require("./notification.routes"));
 router.use("/users", require("./user.routes"));
 router.use("/device-control", require("./schedule.routes"));
-router.use("/soil-advisor", require("./soilAdvisor.routes"));
+router.use("/env-advisor", require("./env.routes"));
 router.use("/rag", require("./rag.routes"));
 router.use("/product-history", require("./productHistory.route"));
 module.exports = router;
