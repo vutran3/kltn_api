@@ -12,9 +12,10 @@ const healthCheckSchema = new Schema(
             image_url: { type: String, required: true },
             public_id: { type: String, requried: true }
         },
-        ai_prediction: { type: Schema.Types.Mixed, required: true }
+        ai_prediction: { type: Schema.Types.Mixed, required: true },
+        expert_feedback: String
     },
-    { collection: COLLECTION_NAME }
+    { collection: COLLECTION_NAME, timestamps: true }
 );
 
 healthCheckSchema.index({ inspection_date: 1 });

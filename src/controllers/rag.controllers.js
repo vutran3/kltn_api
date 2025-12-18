@@ -152,7 +152,7 @@ class RagControllers {
 
             const sent = await sendExpertReviewEmail({
                 deviceId: ragRecord.device_id,
-                detect_date: ragRecord.detect_date,
+                detectDate: ragRecord.detect_date,
                 advice: ragRecord.description,
                 imageBuffer: ragRecord.image,
                 ragId: ragRecord._id

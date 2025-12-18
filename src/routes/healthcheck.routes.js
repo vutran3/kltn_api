@@ -10,5 +10,5 @@ router.post(
     asyncHandler(healthCheckController.collectImageWeekly)
 );
 router.get("/get/:hcid", asyncHandler(healthCheckController.findRecordById));
-
+router.put("/feedback/:hcid", asyncHandler(healthCheckController.updateExpertFeedback));
 module.exports = router;

@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:8000
+
+### Test Weekly Image Upload 
+POST {{baseUrl}}/api/health-check/weekly-image
+x-device-id: esp32-01
+Content-Type: image/jpeg
+
+< .\data\benhsuongmai.jpg

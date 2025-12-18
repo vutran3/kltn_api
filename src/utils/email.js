@@ -201,8 +201,65 @@ const sendAdviceEmail = async (userEmail, deviceId, adviceHtml) => {
         throw createHttpError.InternalServerError("Không thể gửi email kế hoạch");
     }
 };
+
+const getAutomatedEmailTemplate = (deviceId, detectDate, advice, healthCheckId) => {
+    const reviewLink = `${process.env.FRONTEND_URL}/expert/auto-review/${healthCheckId}`;
+
+    return `
+    <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #f87171; border-radius: 10px; max-width: 800px; margin: 0 auto;">
+        <h2 style="color: #dc2626; text-align: center;">⚠️ CẢNH BÁO: PHÁT HIỆN BẤT THƯỜNG TỰ ĐỘNG</h2>
+        <p style="text-align: center; color: #555;">Hệ thống giám sát định kỳ vừa phát hiện dấu hiệu bệnh trên cây trồng.</p>
+        
+        <div style="background-color: #fef2f2; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 5px solid #dc2626;">
+            <p><strong>Thiết bị:</strong> ${deviceId}</p>
+            <p><strong>Thời gian phát hiện:</strong> ${new Date(detectDate).toLocaleString("vi-VN")}</p>
+            <p><strong>Loại cảnh báo:</strong> Kiểm tra định kỳ (Weekly Check)</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">Chi tiết chẩn đoán AI:</h3>
+            ${convertMarkdownToHtmlTable(advice)}
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="margin-bottom: 15px;">Vui lòng kiểm tra ngay:</p>
+            <a href="${reviewLink}" 
+               style="background-color: #dc2626; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">
+              Truy cập trang đánh giá 
+            </a>
+        </div>
+    </div>
+    `;
+};
+
+const sendAutomatedAlertEmail = async ({ deviceId, detectDate, advice, imageBuffer, healthCheckId }) => {
+    try {
+        if (!process.env.EXPERT_EMAIL) {
+            console.warn("Chưa cấu hình EXPERT_EMAIL, bỏ qua gửi mail cảnh báo.");
+            return false;
+        }
+
+        const htmlContent = getAutomatedEmailTemplate(deviceId, detectDate, advice, healthCheckId);
+
+        await transporter.sendMail({
+            from: '"IoT Auto-Monitor System" <no-reply@iot-system.com>',
+            to: process.env.EXPERT_EMAIL,
+            subject: `[CẢNH BÁO] Phát hiện bệnh tự động - Thiết bị ${deviceId}`,
+            html: htmlContent,
+            attachments: imageBuffer ? [{ filename: `auto-detect-${healthCheckId}.jpg`, content: imageBuffer }] : []
+        });
+
+        console.log(`[Email] Đã gửi cảnh báo tự động cho ID: ${healthCheckId}`);
+        return true;
+    } catch (err) {
+        console.error("Lỗi gửi mail cảnh báo tự động:", err);
+        return false;
+    }
+};
+
 module.exports = {
     sendAlertEmail,
     sendExpertReviewEmail,
-    sendAdviceEmail
+    sendAdviceEmail,
+    sendAutomatedAlertEmail
 };

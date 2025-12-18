@@ -6,6 +6,8 @@ const HealthCheckService = require("../services/healthcheck.service");
 const { createAndEmit } = require("../services/notification.service");
 const { getDeviceByDeviceId } = require("../services/device.service");
 const { getFieldByDeviceId } = require("../services/field.service");
+const { sendAutomatedAlertEmail } = require("../utils/email");
+const healthcheckModel = require("../models/healthcheck.model");
 
 class HealthCheckController {
     collectImageWeekly = async (req, res, next) => {
@@ -127,6 +129,14 @@ class HealthCheckController {
 
         if (predict?.is_diseased && field) {
             const userId = field?.ownerUserId || device?.userId;
+            sendAutomatedAlertEmail({
+                deviceId: deviceId,
+                detectDate: new Date(),
+                advice: predict.prediction_text,
+                imageBuffer: imgBuffer,
+                healthCheckId: predicted._id
+            }).catch((err) => console.error("Auto email error:", err));
+
             await createAndEmit({
                 userId,
                 deviceId,
@@ -157,6 +167,25 @@ class HealthCheckController {
         new SuccessResponse({
             message: "Find record by id",
             metadata: await HealthCheckService.findRecordById(req.params.hcid)
+        }).send(res);
+    };
+
+    updateExpertFeedback = async (req, res, next) => {
+        const { hcid } = req.params;
+        const { feedback } = req.body;
+
+        if (!hcid) throw new BadRequestError("HealthCheck ID is required");
+        if (!feedback || feedback.trim() === "") {
+            throw new BadRequestError("Nội dung đánh giá không được để trống");
+        }
+
+        const record = await healthcheckModel.findByIdAndUpdate(hcid, { expert_feedback: feedback }, { new: true });
+
+        if (!record) throw new BadRequestError("Không tìm thấy bản ghi");
+
+        new SuccessResponse({
+            message: "Cập nhật đánh giá chuyên gia thành công",
+            metadata: record
         }).send(res);
     };
 }
